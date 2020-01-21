@@ -57,7 +57,9 @@ int Registration()
 	return 0;
 }
 
-int menu();
+int menu_start();
+int menu_registration();
+int menu_authorization();
 int main()
 {
 	setlocale(LC_ALL, "Russian");
@@ -71,14 +73,18 @@ int main()
 	return 0;
 }
 
-int menu() {
+int menu_start() {
 	int key = 0;
 	int code;
 	do {
 		system("cls");
-		key = (key + 1) % 1;
-		if (key == 0) cout << "-> Palindrom (Task_1)" << endl;
-		else  cout << "   Palindrom (Task_1)" << endl;
+		key = (key + 3) % 3;
+		if (key == 0) cout << "-> I'd like to sign in" << endl;
+		else  cout << "   I'd like to sign in" << endl;
+		if (key == 1) cout << "-> I'm new user, let me create a new account" << endl;
+		else  cout << "   I'm new user, let me create a new account" << endl;
+		if (key == 2) cout << "-> Exit" << endl;
+		else  cout << "   Exit" << endl;
 		code = _getch();
 		if (code == 224)
 		{
