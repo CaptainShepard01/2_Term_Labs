@@ -63,7 +63,7 @@ int md5(char* p, int n) {
 
 			y *= pow(256, 4 - tick);
 			u[j][(i - 64 * j) / 4] = y + pow(256, 3 - tick);
-			cout << u[j][(i - 64 * j) / 4] << ' ';
+			//cout << u[j][(i - 64 * j) / 4] << ' ';
 			ttick++;
 			break;
 		}

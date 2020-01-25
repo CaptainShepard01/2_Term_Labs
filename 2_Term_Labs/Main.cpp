@@ -59,9 +59,8 @@ int main()
 		Authorization(); break;
 	case 1:/*int answer_reg = menu_registration();*/
 		Registration(global_user_id); break;
-	case 2: system("cls"); cout << "Goodbye\n"; return 0;
+	case 2: system("cls"); cout << "Goodbye\n__________________"; return 0;
 	}
-	return 0;
 }
 
 int Authentication(User user)
@@ -103,6 +102,7 @@ int Registration(int &curid)
 	cout << "Enter password: ";
 	char password[20];
 	cin.getline(password, 20);
+	cout << strlen(password);
 	cout << "Choose your role:\n";
 	cout << "1 ---> client\n2 ---> admin\n";
 	int tmp = 0;
@@ -112,7 +112,7 @@ int Registration(int &curid)
 	case 1: cur.role = client; break;
 	case 2: cur.role = admin; break;
 	}
-	cur.password = 1125;
+	cur.password = md5(password, strlen(password));
 	ofstream f("users.dat", ios::app);
 	f.write((char*)&cur, sizeof(User));
 	f.close();
@@ -126,13 +126,12 @@ int Authorization()
 	User iteruser;
 	cout << "Enter login: ";
 	char login[20];
-	cin.ignore(1);
 	cin.getline(login, 20);
 	cout << "Enter password: ";
 	char strpassword[20];
 	cin.getline(strpassword, 20);
 	int passwordmd5;
-	passwordmd5 = 1125;
+	passwordmd5 = md5(strpassword, strlen(strpassword));
 	ifstream f("users.dat");
 	while (!f.eof()) {
 		f.read((char*)&iteruser, sizeof(User));
