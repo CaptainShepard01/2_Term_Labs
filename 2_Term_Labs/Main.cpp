@@ -47,15 +47,22 @@ int Authorization();
 int Authentication(User user);
 int global_user_id = 1;
 int menu_start();
+
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-	int answer = menu_start();
-	switch (answer)
+	bool isRunning = true;
+	while (isRunning)
 	{
-	case 0:Authorization(); break;
-	case 1:Registration(global_user_id); break;
-	case 2: system("cls"); cout << "Goodbye\n__________________"; return 0;
+		int answer = 0;
+		setlocale(LC_ALL, "Russian");
+		answer = menu_start();
+		switch (answer)
+		{
+		case 0:Authorization(); break;
+		case 1:Registration(global_user_id); break;
+		case 2: system("cls"); cout << "Goodbye\n__________________"; isRunning = false;
+		}
+
 	}
 }
 
@@ -74,7 +81,7 @@ int Authentication(User user)
 		case 1: cout << "Ok\n"; break;
 		case 2: cout << "Ok\n"; break;
 		case 3: cout << "Ok\n"; break;
-		case 4: system("cls"); main();
+		case 4: system("cls"); return 0; break;
 		}
 	}
 	if (user.role == client)
@@ -83,13 +90,13 @@ int Authentication(User user)
 		switch (tmp)
 		{
 		case 0: cout << "Let's go!\n";
-		case 1: system("cls"); main();
+		case 1: system("cls"); return 0;
 		}
 	}
 	return 0;
 }
 
-int Registration(int &curid)
+int Registration(int& curid)
 {
 	User cur;
 	cur.id = curid;
@@ -108,13 +115,12 @@ int Registration(int &curid)
 	case 1: cur.role = client; break;
 	case 2: cur.role = admin; break;
 	}
-	cur.password = 1155;
-	//cur.password = md5(password, strlen(password));
-	ofstream f("users.dat", ios::app, ios::binary);
-	f.write((char*)&cur, sizeof(User));
+	cur.password = md5(password, strlen(password));
+	ofstream f("users.dat", ios::app);
+	f.write((char*)& cur, sizeof(User));
 	f.close();
 	curid++;
-	main();
+
 	return 0;
 }
 
@@ -123,29 +129,34 @@ int Authorization()
 	User iteruser;
 	cout << "Enter login: ";
 	char login[20];
-	cin.getline(login, 20);
+	cin.getline(login, 19);
 	cout << "Enter password: ";
 	char strpassword[20];
-	cin.getline(strpassword, 20);
+	cin.getline(strpassword, 19);
 	int passwordmd5;
-	passwordmd5 = 1155;
-	//passwordmd5 = md5(strpassword, strlen(strpassword));
-	ifstream f("users.dat", ios::binary);
+	passwordmd5 = md5(strpassword, strlen(strpassword));
+	ifstream f("users.dat");
+
+	bool isAuthorised = false;
+
 	while (!f.eof()) {
-		f.read((char*)&iteruser, sizeof(User));
-		if (strcmp(iteruser.login,login)==0) {
+		f.read((char*)& iteruser, sizeof(User));
+		if (strcmp(iteruser.login, login) == 0) {
 			if (iteruser.password == passwordmd5) {
 				Authentication(iteruser);
+				isAuthorised = true;
+				break;
 			}
 		}
-		else {
-			cout << "Wrong user!\n";
-			system("pause");
-			system("cls");
-			main();
-		}
+	}
+	if (!isAuthorised)
+	{
+		cout << "Wrong user!\n";
+		system("pause");
 	}
 	f.close();
+	system("cls");
+
 	return 0;
 }
 
@@ -178,10 +189,11 @@ int menu_admin()
 	int key = 0;
 	int code;
 	do {
+		system("cls");
 		cout << "Hello, admin!\n";
 		cout << "Choose the option:\n";
 		cout << "__________________\n";
-		system("cls");
+
 		key = (key + 5) % 5;
 		if (key == 0) cout << "-> Create" << endl;
 		else  cout << "   Create" << endl;
@@ -210,10 +222,10 @@ int menu_client()
 	int key = 0;
 	int code;
 	do {
+		system("cls");
 		cout << "Hello, client!\n";
 		cout << "Choose the option:\n";
 		cout << "__________________\n";
-		system("cls");
 		key = (key + 2) % 2;
 		if (key == 0) cout << "-> Tests" << endl;
 		else  cout << "   Tests" << endl;
