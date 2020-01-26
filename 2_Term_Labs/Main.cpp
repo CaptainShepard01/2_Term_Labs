@@ -180,7 +180,7 @@ int menu_admin()
 	int key = 0;
 	int code;
 	do {
-		cout << "Hello, admin!\n";
+		cout << "Hello, admin! \n";
 		cout << "Choose the option:\n";
 		cout << "__________________\n";
 		system("cls");
