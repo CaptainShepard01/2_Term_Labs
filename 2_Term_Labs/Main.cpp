@@ -108,8 +108,9 @@ int Registration(int &curid)
 	case 1: cur.role = client; break;
 	case 2: cur.role = admin; break;
 	}
-	cur.password = md5(password, strlen(password));
-	ofstream f("users.dat", ios::app);
+	cur.password = 1155;
+	//cur.password = md5(password, strlen(password));
+	ofstream f("users.dat", ios::app, ios::binary);
 	f.write((char*)&cur, sizeof(User));
 	f.close();
 	curid++;
@@ -127,8 +128,9 @@ int Authorization()
 	char strpassword[20];
 	cin.getline(strpassword, 20);
 	int passwordmd5;
-	passwordmd5 = md5(strpassword, strlen(strpassword));
-	ifstream f("users.dat");
+	passwordmd5 = 1155;
+	//passwordmd5 = md5(strpassword, strlen(strpassword));
+	ifstream f("users.dat", ios::binary);
 	while (!f.eof()) {
 		f.read((char*)&iteruser, sizeof(User));
 		if (strcmp(iteruser.login,login)==0) {
