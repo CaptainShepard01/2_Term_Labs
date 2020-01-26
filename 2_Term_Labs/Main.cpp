@@ -125,6 +125,7 @@ int Authorization()
 {
 	User iteruser;
 	cout << "Enter login: ";
+	cin.ignore(1);
 	char login[20];
 	cin.getline(login, 20);
 	cout << "Enter password: ";
