@@ -47,18 +47,14 @@ int Authorization();
 int Authentication(User user);
 int global_user_id = 1;
 int menu_start();
-int menu_registration();
-int menu_authorization();
 int main()
 {
 	setlocale(LC_ALL, "Russian");
 	int answer = menu_start();
 	switch (answer)
 	{
-	case 0://int answer_authoriz = menu_authorization(); 
-		Authorization(); break;
-	case 1:/*int answer_reg = menu_registration();*/
-		Registration(global_user_id); break;
+	case 0:Authorization(); break;
+	case 1:Registration(global_user_id); break;
 	case 2: system("cls"); cout << "Goodbye\n__________________"; return 0;
 	}
 }
@@ -112,8 +108,9 @@ int Registration(int &curid)
 	case 1: cur.role = client; break;
 	case 2: cur.role = admin; break;
 	}
-	cur.password = md5(password, strlen(password));
-	ofstream f("users.dat", ios::app);
+	cur.password = 1155;
+	//cur.password = md5(password, strlen(password));
+	ofstream f("users.dat", ios::app, ios::binary);
 	f.write((char*)&cur, sizeof(User));
 	f.close();
 	curid++;
@@ -131,8 +128,9 @@ int Authorization()
 	char strpassword[20];
 	cin.getline(strpassword, 20);
 	int passwordmd5;
-	passwordmd5 = md5(strpassword, strlen(strpassword));
-	ifstream f("users.dat");
+	passwordmd5 = 1155;
+	//passwordmd5 = md5(strpassword, strlen(strpassword));
+	ifstream f("users.dat", ios::binary);
 	while (!f.eof()) {
 		f.read((char*)&iteruser, sizeof(User));
 		if (strcmp(iteruser.login,login)==0) {
