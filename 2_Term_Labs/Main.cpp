@@ -47,18 +47,14 @@ int Authorization();
 int Authentication(User user);
 int global_user_id = 1;
 int menu_start();
-int menu_registration();
-int menu_authorization();
 int main()
 {
 	setlocale(LC_ALL, "Russian");
 	int answer = menu_start();
 	switch (answer)
 	{
-	case 0://int answer_authoriz = menu_authorization(); 
-		Authorization(); break;
-	case 1:/*int answer_reg = menu_registration();*/
-		Registration(global_user_id); break;
+	case 0:Authorization(); break;
+	case 1:Registration(global_user_id); break;
 	case 2: system("cls"); cout << "Goodbye\n__________________"; return 0;
 	}
 }
