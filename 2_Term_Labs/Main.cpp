@@ -70,27 +70,39 @@ int Authentication(User user)
 {
 	if (user.role == admin)
 	{
-		system("cls");
-		cout << "Hello, admin!\n";
-		cout << "Choose the option:\n";
-		cout << "__________________\n";
-		int tmp = menu_admin();
-		switch (tmp)
+		bool isRunning = true;
+		while (isRunning)
 		{
-		case 0: cout << "Ok\n"; break;
-		case 1: cout << "Ok\n"; break;
-		case 2: cout << "Ok\n"; break;
-		case 3: cout << "Ok\n"; break;
-		case 4: system("cls"); return 0; break;
+			system("cls");
+			cout << "Hello, admin!\n";
+			cout << "Choose the option:\n";
+			cout << "__________________\n";
+			int tmp = menu_admin();
+			switch (tmp)
+			{
+			case 0: cout << "Ok\n"; break;
+			case 1: cout << "Ok\n"; break;
+			case 2: cout << "Ok\n"; break;
+			case 3: cout << "Ok\n"; break;
+			case 4: system("cls"); isRunning = 0; return 0; break;
+			}
 		}
 	}
 	if (user.role == client)
 	{
-		int tmp = menu_client();
-		switch (tmp)
+		bool isRunning = true;
+		while (isRunning)
 		{
-		case 0: cout << "Let's go!\n";
-		case 1: system("cls"); return 0;
+			system("cls");
+			cout << "Hello, client!\n";
+			cout << "Choose the option:\n";
+			cout << "__________________\n";
+			int tmp = menu_client();
+			switch (tmp)
+			{
+			case 0: cout << "Let's go!\n";
+			case 1: system("cls"); isRunning = 0; return 0;
+			}
 		}
 	}
 	return 0;
@@ -105,7 +117,7 @@ int Registration(int& curid)
 	cout << "Enter password: ";
 	char password[20];
 	cin.getline(password, 20);
-	cout << strlen(password);
+	//cout << strlen(password);
 	cout << "Choose your role:\n";
 	cout << "1 ---> client\n2 ---> admin\n";
 	int tmp = 0;
@@ -116,7 +128,7 @@ int Registration(int& curid)
 	case 2: cur.role = admin; break;
 	}
 	cur.password = md5(password, strlen(password));
-	ofstream f("users.dat", ios::app);
+	ofstream f("users.dat", ios::app, ios::binary);
 	f.write((char*)& cur, sizeof(User));
 	f.close();
 	curid++;
@@ -135,7 +147,7 @@ int Authorization()
 	cin.getline(strpassword, 19);
 	int passwordmd5;
 	passwordmd5 = md5(strpassword, strlen(strpassword));
-	ifstream f("users.dat");
+	ifstream f("users.dat", ios::binary);
 
 	bool isAuthorised = false;
 
