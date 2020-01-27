@@ -42,10 +42,10 @@ struct Answers
 
 int menu_admin();
 int menu_client();
-int Registration(int& curid);
+int Registration();
 int Authorization();
 int Authentication(User user);
-int global_user_id = 1;
+//int global_user_id = 0;
 int menu_start();
 
 int main()
@@ -59,7 +59,7 @@ int main()
 		switch (answer)
 		{
 		case 0:Authorization(); break;
-		case 1:Registration(global_user_id); break;
+		case 1:Registration(); break;
 		case 2: system("cls"); cout << "Goodbye\n__________________"; isRunning = false;
 		}
 
@@ -80,10 +80,10 @@ int Authentication(User user)
 			int tmp = menu_admin();
 			switch (tmp)
 			{
-			case 0: cout << "Ok\n"; break;
-			case 1: cout << "Ok\n"; break;
-			case 2: cout << "Ok\n"; break;
-			case 3: cout << "Ok\n"; break;
+			case 0: cout << "Ok\n"; isRunning = 0; return 0; break;
+			case 1: cout << "Ok\n"; isRunning = 0; return 0; break;
+			case 2: cout << "Ok\n"; isRunning = 0; return 0; break;
+			case 3: cout << "Ok\n"; isRunning = 0; return 0; break;
 			case 4: system("cls"); isRunning = 0; return 0; break;
 			}
 		}
@@ -100,7 +100,7 @@ int Authentication(User user)
 			int tmp = menu_client();
 			switch (tmp)
 			{
-			case 0: cout << "Let's go!\n";
+			case 0: cout << "Let's go!\n"; system("pause");
 			case 1: system("cls"); isRunning = 0; return 0;
 			}
 		}
@@ -108,15 +108,28 @@ int Authentication(User user)
 	return 0;
 }
 
-int Registration(int& curid)
+int Registration()
 {
+	User iteruser;
+	int cnt = 0;
+	ifstream f1("users.dat", ios::binary);
+	while (!f1.eof()) {
+		f1.read((char*)&iteruser, sizeof(User));
+		cnt++;
+	}
+	bool isFirst = 0;
+	cnt > 0 ? isFirst = 0 : isFirst = 1;
+	f1.close();
 	User cur;
-	cur.id = curid;
+	//cur.id = curid;
+	if (isFirst)cur.id = 1;
+	else cur.id = cnt++;
+	cout << "\n\n" << cur.id << "\n\n";
 	cout << "Enter login: ";
-	cin.getline(cur.login, 20);
+	cin.getline(cur.login, 19);
 	cout << "Enter password: ";
 	char password[20];
-	cin.getline(password, 20);
+	cin.getline(password, 19);
 	//cout << strlen(password);
 	cout << "Choose your role:\n";
 	cout << "1 ---> client\n2 ---> admin\n";
@@ -129,10 +142,10 @@ int Registration(int& curid)
 	}
 	cur.password = md5(password, strlen(password));
 	ofstream f("users.dat", ios::app, ios::binary);
-	f.write((char*)& cur, sizeof(User));
+	f.write((char*)&cur, sizeof(User));
 	f.close();
-	curid++;
-
+	//curid++;
+	//cout << "\n\n" << curid << "\n\n";
 	return 0;
 }
 
@@ -152,18 +165,26 @@ int Authorization()
 	bool isAuthorised = false;
 
 	while (!f.eof()) {
-		f.read((char*)& iteruser, sizeof(User));
+		f.read((char*)&iteruser, sizeof(User));
 		if (strcmp(iteruser.login, login) == 0) {
 			if (iteruser.password == passwordmd5) {
 				Authentication(iteruser);
 				isAuthorised = true;
 				break;
 			}
+			else {
+				cout << "Wrong password!\n";
+				system("pause");
+				cout << "_________________\n";
+				cout << "Enter password again: ";
+				cin.getline(strpassword, 19);
+				passwordmd5 = md5(strpassword, strlen(strpassword));			
+			}
 		}
 	}
 	if (!isAuthorised)
 	{
-		cout << "Wrong user!\n";
+		cout << "Wrong login!\n";
 		system("pause");
 	}
 	f.close();
