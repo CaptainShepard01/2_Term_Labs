@@ -171,8 +171,6 @@ int Registration()
 int Authorization()
 {
 	User iteruser;
-
-
 	char strpassword[20] = {};
 	bool isOk = 0;
 	while (!isOk) {
