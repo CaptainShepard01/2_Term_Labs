@@ -22,15 +22,15 @@ struct User
 	Role role;
 };
 
-struct Questions
+struct Question
 {
-	int id;
+	//int id;
 	int PK_Q;
 	char description[100] = {};
 	bool IsDelete = 0;    //сэкономить время
 };
 
-struct Answers
+struct Answer
 {
 	int id;
 	int PK_A;
@@ -40,6 +40,8 @@ struct Answers
 	bool IsDelete = 0;
 };
 
+int Admin(User user);
+int Client(User user);
 int menu_admin();
 int menu_client();
 int Registration();
@@ -47,7 +49,7 @@ int Authorization();
 int Authentication(User user);
 //int global_user_id = 0;
 int menu_start();
-int QuestionCreator();
+int QuestionCreator(User user);
 
 int main()
 {
@@ -71,23 +73,7 @@ int Authentication(User user)
 {
 	if (user.role == admin)
 	{
-		bool isRunning = true;
-		while (isRunning)
-		{
-			system("cls");
-			cout << "Hello, admin!\n";
-			cout << "Choose the option:\n";
-			cout << "__________________\n";
-			int tmp = menu_admin();
-			switch (tmp)
-			{
-			case 0: cout << "Ok\n"; isRunning = 0; return 0; break;
-			case 1: cout << "Ok\n"; isRunning = 0; return 0; break;
-			case 2: cout << "Ok\n"; isRunning = 0; return 0; break;
-			case 3: cout << "Ok\n"; isRunning = 0; return 0; break;
-			case 4: system("cls"); isRunning = 0; return 0; break;
-			}
-		}
+		Admin(user);
 	}
 	if (user.role == client)
 	{
@@ -104,6 +90,47 @@ int Authentication(User user)
 			case 0: cout << "Let's go!\n"; system("pause");
 			case 1: system("cls"); isRunning = 0; return 0;
 			}
+		}
+	}
+	return 0;
+}
+
+int Admin(User user)
+{
+	bool isRunning = true;
+	while (isRunning)
+	{
+		system("cls");
+		cout << "Hello, admin!\n";
+		cout << "Choose the option:\n";
+		cout << "__________________\n";
+		int tmp = menu_admin();
+		switch (tmp)
+		{
+		case 0: cout << QuestionCreator(user); isRunning = 0; return 0; break;
+		case 1: cout << "Read\n"; system("pause"); isRunning = 0; return 0; break;
+		case 2: cout << "Update\n"; system("pause"); isRunning = 0; return 0; break;
+		case 3: cout << "Delete\n"; system("pause"); isRunning = 0; return 0; break;
+		case 4: system("cls"); isRunning = 0; return 0; break;
+		}
+	}
+	return 0;
+}
+
+int Client(User user)
+{
+	bool isRunning = true;
+	while (isRunning)
+	{
+		system("cls");
+		cout << "Hello, client!\n";
+		cout << "Choose the option:\n";
+		cout << "__________________\n";
+		int tmp = menu_client();
+		switch (tmp)
+		{
+		case 0: cout << "Let's go!\n"; system("pause");
+		case 1: system("cls"); isRunning = 0; return 0;
 		}
 	}
 	return 0;
@@ -289,10 +316,81 @@ int menu_client()
 	return key;
 }
 
-int QuestionCreator()
+int QuestionCreator(User user)
 {
+	system("cls");
+	Question tmp;
+	ifstream qsttmp("questions.dat", ios::binary);
+	int cnt = 0;
+	while (qsttmp.read((char*)& tmp, sizeof(Question))) {
+		cnt++;
+	}
+	qsttmp.close();
+	
+	
 	ofstream qst("questions.dat", ios::app, ios::binary);
+	cout << "Let's create some questions!\n______________________\n";
 
+	bool isFirst = 1;
+	if (cnt > 0)isFirst = 0;
+	Question cur;
+	if (isFirst)cur.PK_Q = 1;
+	else cur.PK_Q = cnt + 1;
+
+	cur.IsDelete = 0;
+
+	cout << '\n';
+	cout << '\a' << "PK = " << cur.PK_Q << '\n';
+
+	cout << "Enter question: ";
+	cin.clear();
+	cin.getline(cur.description, 99);
+	qst.write((char*)& cur, sizeof(Question));
+	cout << "_______________________________________\nDone!\n";
+	system("pause");
 	qst.close();
+	Admin(user);
+	return 0;
+}
+
+int AnswerCreator(User user)
+{
+	system("cls");
+	Answer tmp;
+	ifstream answtmp("answers.dat", ios::binary);
+	int cnt = 0;
+	while (answtmp.read((char*)& tmp, sizeof(Answer))) {
+		cnt++;
+	}
+	answtmp.close();
+
+	bool isFirst = 1;
+	if (cnt > 0)isFirst = 0;
+	Question* mas = new Question[cnt];
+	if (!isFirst) {
+		ifstream answtmp("questions.dat", ios::binary);
+		for (int i = 0; i < cnt; ++i) {
+			answtmp.read((char*)& mas[i], sizeof(Question));
+		}
+		answtmp.close();
+		cout << "________________________\nQuestions: \n";
+		for (int i = 0; i < cnt; ++i) {
+			cout << mas[i].PK_Q << ") ";
+			cout << mas[i].description << endl;
+		}
+		
+	}
+	else {
+		cout << "_________________________________________\nThere aren't any questions created yet, create them first!\n";
+		QuestionCreator(user);
+	}
+
+	ofstream answ("answers.dat", ios::binary);
+
+
+
+	answ.close();
+	delete[] mas;
+	Client(user);
 	return 0;
 }
