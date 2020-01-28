@@ -130,7 +130,7 @@ int Registration()
 		cout << "Enter login: ";
 		//cout << isFirst << endl;
 		cin.clear();
-		while (cin.get() == '\n')continue;
+		//while (cin.get() == '\n')continue;
 		cin.getline(cur.login, 19);
 		f1.close();
 		f1.open("users.dat", ios::binary);
@@ -181,7 +181,7 @@ int Authorization()
 		char login[20] = {};
 		cout << "Enter login: ";
 		cin.clear();
-		while (cin.get() == '\n')continue;
+		//while (cin.get() == '\n')continue;
 		cin.getline(login, 19);
 		while (f.read((char*)&iteruser, sizeof(User))) {
 			if (strcmp(iteruser.login, login) == 0) {
