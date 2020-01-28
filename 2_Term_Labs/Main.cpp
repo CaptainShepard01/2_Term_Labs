@@ -32,7 +32,7 @@ struct Question
 
 struct Answer
 {
-	int id;
+	//int id;
 	int PK_A;
 	int FK_Q;
 	char description[100] = {};
@@ -40,16 +40,20 @@ struct Answer
 	bool IsDelete = 0;
 };
 
+int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question curquest);
 int Admin(User user);
 int Client(User user);
+int Adm_Creator(User user, bool& isRunning);
 int menu_admin();
 int menu_client();
+int menu_create_adm();
 int Registration();
 int Authorization();
 int Authentication(User user);
 //int global_user_id = 0;
 int menu_start();
 int QuestionCreator(User user);
+int AnswerCreator(User user);
 
 int main()
 {
@@ -100,6 +104,7 @@ int Admin(User user)
 	bool isRunning = true;
 	while (isRunning)
 	{
+
 		system("cls");
 		cout << "Hello, admin!\n";
 		cout << "Choose the option:\n";
@@ -107,12 +112,23 @@ int Admin(User user)
 		int tmp = menu_admin();
 		switch (tmp)
 		{
-		case 0: cout << QuestionCreator(user); isRunning = 0; return 0; break;
+		case 0: Adm_Creator(user, isRunning); isRunning = 0; return 0; break;
 		case 1: cout << "Read\n"; system("pause"); isRunning = 0; return 0; break;
 		case 2: cout << "Update\n"; system("pause"); isRunning = 0; return 0; break;
 		case 3: cout << "Delete\n"; system("pause"); isRunning = 0; return 0; break;
 		case 4: system("cls"); isRunning = 0; return 0; break;
 		}
+	}
+	return 0;
+}
+
+int Adm_Creator(User user, bool &isRunning)
+{
+	int t = menu_create_adm();
+	switch (t)
+	{
+	case 0: QuestionCreator(user); isRunning = 0; break;
+	case 1: AnswerCreator(user); isRunning = 0; break;
 	}
 	return 0;
 }
@@ -142,7 +158,7 @@ int Registration()
 	int cnt = 0;
 	ifstream f1("users.dat", ios::binary);
 
-	while (f1.read((char*)&iteruser, sizeof(User))) {
+	while (f1.read((char*)& iteruser, sizeof(User))) {
 		cnt++;
 	}
 	bool isFirst = 1;
@@ -155,15 +171,13 @@ int Registration()
 		system("cls");
 		cout << "\n" << "Id = " << cur.id << "\n\n";
 		cout << "Enter login: ";
-		//cout << isFirst << endl;
 		cin.clear();
-		//while (cin.get() == '\n')continue;
 		cin.getline(cur.login, 19);
 		f1.close();
 		f1.open("users.dat", ios::binary);
 		if (isFirst == 1)isRepeated = 1;
 		else {
-			while (f1.read((char*)&iteruser, sizeof(User))) {
+			while (f1.read((char*)& iteruser, sizeof(User))) {
 				if (strcmp(cur.login, iteruser.login) == 0) {
 					cout << "Login is taken!\n";
 					system("pause");
@@ -190,7 +204,7 @@ int Registration()
 	}
 	cur.password = md5(password, strlen(password));
 	ofstream f("users.dat", ios::app, ios::binary);
-	f.write((char*)&cur, sizeof(User));
+	f.write((char*)& cur, sizeof(User));
 	f.close();
 	return 0;
 }
@@ -208,7 +222,7 @@ int Authorization()
 		cin.clear();
 		//while (cin.get() == '\n')continue;
 		cin.getline(login, 19);
-		while (f.read((char*)&iteruser, sizeof(User))) {
+		while (f.read((char*)& iteruser, sizeof(User))) {
 			if (strcmp(iteruser.login, login) == 0) {
 				isOk = 1;
 				break;
@@ -231,6 +245,29 @@ int Authorization()
 	system("cls");
 	Authentication(iteruser);
 	return 0;
+}
+
+int menu_create_adm()
+{
+	int key = 0;
+	int code;
+	do {
+		system("cls");
+		key = (key + 2) % 2;
+		if (key == 0) cout << "-> Create questions." << endl;
+		else  cout << "   Create questions." << endl;
+		if (key == 1) cout << "-> Create answers." << endl;
+		else  cout << "   Create answers." << endl;
+		code = _getch();
+		if (code == 224)
+		{
+			code = _getch();
+			if (code == 80) key++;
+			if (code == 72) key--;
+		}
+	} while (code != 13);
+	system("cls");
+	return key;
 }
 
 int menu_start() {
@@ -326,8 +363,8 @@ int QuestionCreator(User user)
 		cnt++;
 	}
 	qsttmp.close();
-	
-	
+
+
 	ofstream qst("questions.dat", ios::app, ios::binary);
 	cout << "Let's create some questions!\n______________________\n";
 
@@ -340,13 +377,13 @@ int QuestionCreator(User user)
 	cur.IsDelete = 0;
 
 	cout << '\n';
-	cout << '\a' << "PK = " << cur.PK_Q << '\n';
+	cout << "PK = " << cur.PK_Q << '\n';
 
 	cout << "Enter question: ";
 	cin.clear();
 	cin.getline(cur.description, 99);
 	qst.write((char*)& cur, sizeof(Question));
-	cout << "_______________________________________\nDone!\n";
+	cout << "________\nDone!\n";
 	system("pause");
 	qst.close();
 	Admin(user);
@@ -378,19 +415,85 @@ int AnswerCreator(User user)
 			cout << mas[i].PK_Q << ") ";
 			cout << mas[i].description << endl;
 		}
-		
+
 	}
 	else {
-		cout << "_________________________________________\nThere aren't any questions created yet, create them first!\n";
+		cout << "____________________________________________________\nThere aren't any questions created yet, create them first!\n";
 		QuestionCreator(user);
 	}
 
-	ofstream answ("answers.dat", ios::binary);
+	cout << "Let's create some answers!\n______________________\n";
+	cout << "Which one is a chosen one?\n\n";
+	Answer cur;
+	int qstnmb = 0;
+	cin >> qstnmb;
+	AnswersTyping(cur, qstnmb, isFirst, cnt, mas[qstnmb - 1]);
 
-
-
-	answ.close();
 	delete[] mas;
 	Client(user);
+	return 0;
+}
+
+int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question curquest)
+{
+	system("cls");
+	cout << curquest.description << "\n__________________\n";
+	ofstream answ("answers.dat", ios::app, ios::binary);
+
+	int tmpint = 0;
+	cout << "1-st answer: ";
+	cin.clear();
+	cin.getline(answer.description, 99);
+	if (isFirst)answer.PK_A = 1;
+	else answer.PK_A = cnt + 1;
+	answer.FK_Q = qstnmb;
+	cout << "Is it correct? ";
+	cout << "1 ---> Yes\n2 ---> No\n";
+	cin >> tmpint;
+	switch (tmpint)
+	{
+	case 1: answer.IsCorrect = 1; break;
+	case 2: answer.IsCorrect = 0; break;
+	}
+	answer.IsDelete = 0;
+	answ.write((char*)& answer, sizeof(Answer));
+
+	cout << "_____________________\n2-nd answer: ";
+	cin.clear();
+	cin.getline(answer.description, 99);
+	if (isFirst)answer.PK_A = 1;
+	else answer.PK_A = cnt + 1;
+	answer.FK_Q = qstnmb;
+	cout << "Is it correct? ";
+	cout << "1 ---> Yes\n2 ---> No\n";
+	cin >> tmpint;
+	switch (tmpint)
+	{
+	case 1: answer.IsCorrect = 1; break;
+	case 2: answer.IsCorrect = 0; break;
+	}
+	answer.IsDelete = 0;
+	answ.write((char*)& answer, sizeof(Answer));
+	tmpint = 0;
+
+	cout << "_____________________\n3-rd answer: ";
+	cin.clear();
+	cin.getline(answer.description, 99);
+	if (isFirst)answer.PK_A = 1;
+	else answer.PK_A = cnt + 1;
+	answer.FK_Q = qstnmb;
+	cout << "Is it correct? ";
+	cout << "1 ---> Yes\n2 ---> No\n";
+	cin >> tmpint;
+	switch (tmpint)
+	{
+	case 1: answer.IsCorrect = 1; break;
+	case 2: answer.IsCorrect = 0; break;
+	}
+	answer.IsDelete = 0;
+	answ.write((char*)& answer, sizeof(Answer));
+	tmpint = 0;
+
+	answ.close();
 	return 0;
 }
