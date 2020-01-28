@@ -17,7 +17,7 @@ enum Role { client, admin };
 struct User
 {
 	int id;
-	char login[20];
+	char login[20] = {};
 	int password;
 	Role role;
 };
@@ -26,7 +26,7 @@ struct Questions
 {
 	int id;
 	int PK_Q;
-	char description[100];
+	char description[100] = {};
 	bool IsDelete = 0;    //сэкономить время
 };
 
@@ -35,7 +35,7 @@ struct Answers
 	int id;
 	int PK_A;
 	int FK_Q;
-	char description[100];
+	char description[100] = {};
 	bool IsCorrect = 0;
 	bool IsDelete = 0;
 };
@@ -112,23 +112,25 @@ int Authentication(User user)
 int Registration()
 {
 	User iteruser;
-	int cnt = -1;
+	int cnt = 0;
 	ifstream f1("users.dat", ios::binary);
-	while (!f1.eof()) {
-		f1.read((char*)&iteruser, sizeof(User));
+
+	while (f1.read((char*)&iteruser, sizeof(User))) {
 		cnt++;
 	}
 	bool isFirst = 1;
 	if (cnt > 0)isFirst = 0;
 	User cur;
 	if (isFirst)cur.id = 1;
-	else cur.id = cnt++;
+	else cur.id = cnt + 1;
 	bool isRepeated = 0;
 	while (!isRepeated) {
 		system("cls");
 		cout << "\n" << "Id = " << cur.id << "\n\n";
 		cout << "Enter login: ";
 		//cout << isFirst << endl;
+		cin.clear();
+		while (cin.get() == '\n')continue;
 		cin.getline(cur.login, 19);
 		f1.close();
 		f1.open("users.dat", ios::binary);
@@ -169,21 +171,25 @@ int Registration()
 int Authorization()
 {
 	User iteruser;
-	ifstream f("users.dat", ios::binary);
-	char login[20];
-	char strpassword[20];
+
+
+	char strpassword[20] = {};
 	bool isOk = 0;
 	while (!isOk) {
 		system("cls");
+		ifstream f("users.dat", ios::binary);
+		char login[20] = {};
 		cout << "Enter login: ";
+		cin.clear();
+		while (cin.get() == '\n')continue;
 		cin.getline(login, 19);
-		while (!f.eof()) {
-			f.read((char*)&iteruser, sizeof(User));
+		while (f.read((char*)&iteruser, sizeof(User))) {
 			if (strcmp(iteruser.login, login) == 0) {
 				isOk = 1;
 				break;
 			}
 		}
+		f.close();
 		if (isOk == 1) {
 			int passwordmd5;
 			do {
@@ -194,8 +200,9 @@ int Authorization()
 				passwordmd5 = md5(strpassword, strlen(strpassword));
 			} while (iteruser.password != passwordmd5);
 		}
+
 	}
-	f.close();
+
 	system("cls");
 	Authentication(iteruser);
 	return 0;
