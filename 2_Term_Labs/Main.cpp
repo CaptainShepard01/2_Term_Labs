@@ -44,6 +44,7 @@ int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question cu
 int Admin(User user);
 int Client(User user);
 int Adm_Creator(User user, bool& isRunning);
+int Quiz(User user);
 int menu_admin();
 int menu_client();
 int menu_create_adm();
@@ -122,7 +123,7 @@ int Admin(User user)
 	return 0;
 }
 
-int Adm_Creator(User user, bool &isRunning)
+int Adm_Creator(User user, bool& isRunning)
 {
 	int t = menu_create_adm();
 	switch (t)
@@ -140,12 +141,13 @@ int Client(User user)
 	{
 		system("cls");
 		cout << "Hello, client!\n";
+		cout << "Glad that you have chosen my quiz, " << user.login << " :)\n\n";
 		cout << "Choose the option:\n";
 		cout << "__________________\n";
 		int tmp = menu_client();
 		switch (tmp)
 		{
-		case 0: cout << "Let's go!\n"; system("pause");
+		case 0: cout << "Let's go!\n"; system("pause"); Quiz(user); isRunning = 0; break;
 		case 1: system("cls"); isRunning = 0; return 0;
 		}
 	}
@@ -393,23 +395,23 @@ int QuestionCreator(User user)
 int AnswerCreator(User user)
 {
 	system("cls");
-	Answer tmp;
-	ifstream answtmp("answers.dat", ios::binary);
-	int cnt = 0;
-	while (answtmp.read((char*)& tmp, sizeof(Answer))) {
+	Question tmpqst;
+	ifstream quest("questions.dat", ios::binary);
+	int cnt = 1;   //?????????????????
+	while (quest.read((char*)& tmpqst, sizeof(Answer))) {
 		cnt++;
 	}
-	answtmp.close();
+	quest.close();
 
 	bool isFirst = 1;
 	if (cnt > 0)isFirst = 0;
 	Question* mas = new Question[cnt];
 	if (!isFirst) {
-		ifstream answtmp("questions.dat", ios::binary);
+		ifstream qsttmp("questions.dat", ios::binary);
 		for (int i = 0; i < cnt; ++i) {
-			answtmp.read((char*)& mas[i], sizeof(Question));
+			qsttmp.read((char*)& mas[i], sizeof(Question));
 		}
-		answtmp.close();
+		qsttmp.close();
 		cout << "________________________\nQuestions: \n";
 		for (int i = 0; i < cnt; ++i) {
 			cout << mas[i].PK_Q << ") ";
@@ -427,10 +429,21 @@ int AnswerCreator(User user)
 	Answer cur;
 	int qstnmb = 0;
 	cin >> qstnmb;
+
+	Answer tmpans;
+	ifstream ans("answers.dat", ios::binary);
+	cnt = 1;
+	while (ans.read((char*)& tmpans, sizeof(Answer))) {
+		cnt++;
+	}
+	isFirst = 1;
+	if (cnt > 0)isFirst = 0;
+	ans.close();
+
 	AnswersTyping(cur, qstnmb, isFirst, cnt, mas[qstnmb - 1]);
 
 	delete[] mas;
-	Client(user);
+	Admin(user);
 	return 0;
 }
 
@@ -439,15 +452,15 @@ int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question cu
 	system("cls");
 	cout << curquest.description << "\n__________________\n";
 	ofstream answ("answers.dat", ios::app, ios::binary);
-
 	int tmpint = 0;
 	cout << "1-st answer: ";
-	cin.clear();
+	//cin.clear();
+	while (cin.get() != '\n')continue;
 	cin.getline(answer.description, 99);
 	if (isFirst)answer.PK_A = 1;
 	else answer.PK_A = cnt + 1;
 	answer.FK_Q = qstnmb;
-	cout << "Is it correct? ";
+	cout << "Is it correct?\n";
 	cout << "1 ---> Yes\n2 ---> No\n";
 	cin >> tmpint;
 	switch (tmpint)
@@ -459,12 +472,13 @@ int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question cu
 	answ.write((char*)& answer, sizeof(Answer));
 
 	cout << "_____________________\n2-nd answer: ";
-	cin.clear();
+	//cin.clear();
+	while (cin.get() != '\n')continue;
 	cin.getline(answer.description, 99);
 	if (isFirst)answer.PK_A = 1;
 	else answer.PK_A = cnt + 1;
 	answer.FK_Q = qstnmb;
-	cout << "Is it correct? ";
+	cout << "Is it correct?\n";
 	cout << "1 ---> Yes\n2 ---> No\n";
 	cin >> tmpint;
 	switch (tmpint)
@@ -477,12 +491,13 @@ int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question cu
 	tmpint = 0;
 
 	cout << "_____________________\n3-rd answer: ";
-	cin.clear();
+	//cin.clear();
+	while (cin.get() != '\n')continue;
 	cin.getline(answer.description, 99);
 	if (isFirst)answer.PK_A = 1;
 	else answer.PK_A = cnt + 1;
 	answer.FK_Q = qstnmb;
-	cout << "Is it correct? ";
+	cout << "Is it correct?\n";
 	cout << "1 ---> Yes\n2 ---> No\n";
 	cin >> tmpint;
 	switch (tmpint)
@@ -495,5 +510,54 @@ int AnswersTyping(Answer& answer, int qstnmb, bool isFirst, int cnt, Question cu
 	tmpint = 0;
 
 	answ.close();
+	return 0;
+}
+
+int Quiz(User user)
+{
+	int points = 0;
+	int a = 0;
+	system("cls");
+	Question tmpqst;
+	ifstream quest("questions.dat", ios::binary);
+	int cnt = 1;
+	while (quest.read((char*)& tmpqst, sizeof(Answer))) {
+		cnt++;
+	}
+	quest.close();
+
+	Question* mas = new Question[cnt];
+	ifstream qsttmp("questions.dat", ios::binary);
+	for (int i = 0; i < cnt; ++i) {
+		qsttmp.read((char*)& mas[i], sizeof(Question));
+	}
+	qsttmp.close();
+
+	ifstream answ("answers.dat", ios::binary);
+	Answer* ans = new Answer[3 * cnt];
+	for (int i = 0; i < 3; ++i) {
+		answ.read((char*)& ans[i], sizeof(Answer));
+	}
+	for (int i = 0; i < cnt; ++i) {
+		system("cls");
+		cout << mas[i].PK_Q << ") ";
+		cout << mas[i].description << endl << endl;
+		for (int j = 0; j < 3; ++j) {
+			cout << j + 1 << ") ";
+			cout << ans[j + i * 3].description << endl;
+		}
+		cout << "Your answer: ";
+		cin >> a;
+		if (ans[(a - 1) + i * 3].IsCorrect == 1) {
+			points++;
+		}
+	}
+	answ.close();
+	ofstream ud("userdata.dat", ios::app, ios::binary);
+	ud << points;
+	delete[] mas;
+	delete[] ans;
+	ud.close();
+	Client(user);
 	return 0;
 }
