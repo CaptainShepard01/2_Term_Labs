@@ -47,6 +47,7 @@ int Authorization();
 int Authentication(User user);
 //int global_user_id = 0;
 int menu_start();
+int QuestionCreator();
 
 int main()
 {
@@ -60,7 +61,7 @@ int main()
 		{
 		case 0:Authorization(); break;
 		case 1:Registration(); break;
-		case 2: system("cls"); cout << "Goodbye\n__________________"; isRunning = false;
+		case 2: system("cls"); cout << "Goodbye!\n__________________"; isRunning = false;
 		}
 
 	}
@@ -111,26 +112,44 @@ int Authentication(User user)
 int Registration()
 {
 	User iteruser;
-	int cnt = 0;
+	int cnt = -1;
 	ifstream f1("users.dat", ios::binary);
 	while (!f1.eof()) {
 		f1.read((char*)&iteruser, sizeof(User));
 		cnt++;
 	}
-	bool isFirst = 0;
-	cnt > 0 ? isFirst = 0 : isFirst = 1;
-	f1.close();
+	bool isFirst = 1;
+	if (cnt > 0)isFirst = 0;
 	User cur;
-	//cur.id = curid;
 	if (isFirst)cur.id = 1;
 	else cur.id = cnt++;
-	cout << "\n\n" << cur.id << "\n\n";
-	cout << "Enter login: ";
-	cin.getline(cur.login, 19);
+	bool isRepeated = 0;
+	while (!isRepeated) {
+		system("cls");
+		cout << "\n" << "Id = " << cur.id << "\n\n";
+		cout << "Enter login: ";
+		//cout << isFirst << endl;
+		cin.getline(cur.login, 19);
+		f1.close();
+		f1.open("users.dat", ios::binary);
+		if (isFirst == 1)isRepeated = 1;
+		else {
+			while (f1.read((char*)&iteruser, sizeof(User))) {
+				if (strcmp(cur.login, iteruser.login) == 0) {
+					cout << "Login is taken!\n";
+					system("pause");
+					isRepeated = 0;
+					break;
+				}
+				isRepeated = 1;
+			}
+		}
+
+	}
+	f1.close();
 	cout << "Enter password: ";
 	char password[20];
 	cin.getline(password, 19);
-	//cout << strlen(password);
 	cout << "Choose your role:\n";
 	cout << "1 ---> client\n2 ---> admin\n";
 	int tmp = 0;
@@ -144,52 +163,41 @@ int Registration()
 	ofstream f("users.dat", ios::app, ios::binary);
 	f.write((char*)&cur, sizeof(User));
 	f.close();
-	//curid++;
-	//cout << "\n\n" << curid << "\n\n";
 	return 0;
 }
 
 int Authorization()
 {
 	User iteruser;
-	cout << "Enter login: ";
-	char login[20];
-	cin.getline(login, 19);
-	cout << "Enter password: ";
-	char strpassword[20];
-	cin.getline(strpassword, 19);
-	int passwordmd5;
-	passwordmd5 = md5(strpassword, strlen(strpassword));
 	ifstream f("users.dat", ios::binary);
-
-	bool isAuthorised = false;
-
-	while (!f.eof()) {
-		f.read((char*)&iteruser, sizeof(User));
-		if (strcmp(iteruser.login, login) == 0) {
-			if (iteruser.password == passwordmd5) {
-				Authentication(iteruser);
-				isAuthorised = true;
+	char login[20];
+	char strpassword[20];
+	bool isOk = 0;
+	while (!isOk) {
+		system("cls");
+		cout << "Enter login: ";
+		cin.getline(login, 19);
+		while (!f.eof()) {
+			f.read((char*)&iteruser, sizeof(User));
+			if (strcmp(iteruser.login, login) == 0) {
+				isOk = 1;
 				break;
 			}
-			else {
-				cout << "Wrong password!\n";
-				system("pause");
-				cout << "_________________\n";
-				cout << "Enter password again: ";
-				cin.getline(strpassword, 19);
-				passwordmd5 = md5(strpassword, strlen(strpassword));			
-			}
 		}
-	}
-	if (!isAuthorised)
-	{
-		cout << "Wrong login!\n";
-		system("pause");
+		if (isOk == 1) {
+			int passwordmd5;
+			do {
+				system("cls");
+				cout << "Current login: " << login << '\n';
+				cout << "Enter password: ";
+				cin.getline(strpassword, 19);
+				passwordmd5 = md5(strpassword, strlen(strpassword));
+			} while (iteruser.password != passwordmd5);
+		}
 	}
 	f.close();
 	system("cls");
-
+	Authentication(iteruser);
 	return 0;
 }
 
@@ -276,3 +284,10 @@ int menu_client()
 	return key;
 }
 
+int QuestionCreator()
+{
+	ofstream qst("questions.dat", ios::app, ios::binary);
+
+	qst.close();
+	return 0;
+}

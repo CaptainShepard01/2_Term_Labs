@@ -67,7 +67,7 @@ int md5(char* p, int n) {
 			ttick++;
 			break;
 		}
-		ttick++;
+		//ttick++;
 		u[j][(i - 64 * j) / 4] = y;
 		//cout << u[j][(i - 64 * j) / 4] << ' ';
 	}
