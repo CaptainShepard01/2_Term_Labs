@@ -82,20 +82,7 @@ int Authentication(User user)
 	}
 	if (user.role == client)
 	{
-		bool isRunning = true;
-		while (isRunning)
-		{
-			system("cls");
-			cout << "Hello, client!\n";
-			cout << "Choose the option:\n";
-			cout << "__________________\n";
-			int tmp = menu_client();
-			switch (tmp)
-			{
-			case 0: cout << "Let's go!\n"; system("pause");
-			case 1: system("cls"); isRunning = 0; return 0;
-			}
-		}
+		Client(user);
 	}
 	return 0;
 }
@@ -140,14 +127,13 @@ int Client(User user)
 	while (isRunning)
 	{
 		system("cls");
-		cout << "Hello, client!\n";
-		cout << "Glad that you have chosen my quiz, " << user.login << " :)\n\n";
-		cout << "Choose the option:\n";
-		cout << "__________________\n";
 		int tmp = menu_client();
 		switch (tmp)
 		{
-		case 0: cout << "Let's go!\n"; system("pause"); Quiz(user); isRunning = 0; break;
+		case 0: cout << "Let's go!\n"; system("pause");
+			system("cls");
+			cout << "Hello, client!\n";
+			cout << "Glad that you have chosen my quiz, " << user.login << " :)\n\n"; system("pause"); Quiz(user); isRunning = 0; break;
 		case 1: system("cls"); isRunning = 0; return 0;
 		}
 	}
@@ -521,7 +507,7 @@ int Quiz(User user)
 	Question tmpqst;
 	ifstream quest("questions.dat", ios::binary);
 	int cnt = 1;
-	while (quest.read((char*)& tmpqst, sizeof(Answer))) {
+	while (quest.read((char*)& tmpqst, sizeof(Question))) {
 		cnt++;
 	}
 	quest.close();
@@ -535,7 +521,7 @@ int Quiz(User user)
 
 	ifstream answ("answers.dat", ios::binary);
 	Answer* ans = new Answer[3 * cnt];
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3*cnt; ++i) {
 		answ.read((char*)& ans[i], sizeof(Answer));
 	}
 	for (int i = 0; i < cnt; ++i) {
