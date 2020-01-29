@@ -92,7 +92,6 @@ int Admin(User user)
 	bool isRunning = true;
 	while (isRunning)
 	{
-
 		system("cls");
 		cout << "Hello, admin!\n";
 		cout << "Choose the option:\n";
@@ -130,10 +129,9 @@ int Client(User user)
 		int tmp = menu_client();
 		switch (tmp)
 		{
-		case 0: cout << "Let's go!\n"; system("pause");
-			system("cls");
-			cout << "Hello, client!\n";
-			cout << "Glad that you have chosen my quiz, " << user.login << " :)\n\n"; system("pause"); Quiz(user); isRunning = 0; break;
+		case 0:
+		{cout << "Hello, client!\n";
+		cout << "Glad that you have chosen my quiz, " << user.login << " :)\n\n"; system("pause"); Quiz(user); isRunning = 0; break; }
 		case 1: system("cls"); isRunning = 0; return 0;
 		}
 	}
@@ -383,8 +381,8 @@ int AnswerCreator(User user)
 	system("cls");
 	Question tmpqst;
 	ifstream quest("questions.dat", ios::binary);
-	int cnt = 1;   //?????????????????
-	while (quest.read((char*)& tmpqst, sizeof(Answer))) {
+	int cnt = 0;   //?????????????????
+	while (quest.read((char*)& tmpqst, sizeof(Question))) {
 		cnt++;
 	}
 	quest.close();
@@ -506,7 +504,7 @@ int Quiz(User user)
 	system("cls");
 	Question tmpqst;
 	ifstream quest("questions.dat", ios::binary);
-	int cnt = 1;
+	int cnt = 0;
 	while (quest.read((char*)& tmpqst, sizeof(Question))) {
 		cnt++;
 	}
