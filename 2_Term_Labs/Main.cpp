@@ -25,7 +25,7 @@ struct User
 struct Question
 {
 	//int id;
-	int PK_Q;
+	int PK_Q = 0;
 	char description[100] = {};
 	bool IsDelete = 0;    //сэкономить время
 };
@@ -33,8 +33,8 @@ struct Question
 struct Answer
 {
 	//int id;
-	int PK_A;
-	int FK_Q;
+	int PK_A = 0;
+	int FK_Q = 0;
 	char description[100] = {};
 	bool IsCorrect = 0;
 	bool IsDelete = 0;
@@ -93,6 +93,7 @@ int Admin(User user)
 	bool isRunning = true;
 	while (isRunning)
 	{
+		
 		system("cls");
 		cout << "Hello, admin!\n";
 		cout << "Choose the option:\n";
@@ -100,8 +101,8 @@ int Admin(User user)
 		int tmp = menu_admin();
 		switch (tmp)
 		{
-		case 0: cout << "Create some questions and answers for them\n"; system("pause"); QuestionCreator(user);  return 0; break;
-		case 1: cout << Read(user); isRunning = 0; return 0; break;
+		case 0: cin.clear(); while (cin.get() != '\n'); QuestionCreator(user);  return 0; break;
+		case 1: Read(user); isRunning = 0; return 0; break;
 		case 2: cout << "Update\n"; system("pause"); isRunning = 0; return 0; break;
 		case 3: cout << "Delete\n"; system("pause"); isRunning = 0; return 0; break;
 		case 4: system("cls"); isRunning = 0; return 0; break;
@@ -353,7 +354,8 @@ int QuestionCreator(User user)
 
 
 	ofstream qst("questions.dat", ios::app, ios::binary);
-	cout << "Let's create some questions!\n______________________\n";
+	/*cout << "Let's create some questions!\n______________________\n";
+	system("pause");*/
 
 	cnt++;
 	Question cur;
@@ -363,12 +365,14 @@ int QuestionCreator(User user)
 	cur.IsDelete = 0;
 	system("cls");
 
-	cout << '\n';
 	cout << "PK = " << cur.PK_Q << '\n';
 
 	cout << "Enter question: ";
+	char t;
+	//cin >> t;
 	cin.clear();
-	while (cin.get() != '\n')continue;
+	//while (cin.get() != '\n');
+	
 	cin.getline(cur.description, 99);
 	//cur.description[strlen(cur.description)] = '\0';
 	qst.write((char*)& cur, sizeof(Question));
@@ -378,6 +382,7 @@ int QuestionCreator(User user)
 	system("pause");
 	system("cls");
 	cout << "Let's create some answers!\n______________________\n";
+	system("pause");
 
 	
 
@@ -544,12 +549,13 @@ int Read(User user)
 	for (int j = 0; j < cnt; ++j) {
 		q.read((char*)&tmpqst, sizeof(Question));
 		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl;
-		cout << "///////////////////////\n\n";
+		
 		for (int i = 0; i < 3; ++i) {
 			a.read((char*)&tmpansw, sizeof(Answer));
 			
 			cout << tmpansw.PK_A << ") " << tmpansw.description << " " << tmpansw.IsCorrect << " " << tmpansw.IsDelete << endl << endl;
 		}
+		cout << "///////////////////////\n\n";
 	}
 
 	system("pause");
