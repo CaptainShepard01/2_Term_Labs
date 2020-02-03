@@ -548,13 +548,15 @@ int Read(User user)
 	cout << "____________________________________________________________________________________\n";
 	Question tmpqst;
 	Answer tmpansw;
-	ifstream q("questions.dat", ios::binary);
+	//ifstream q("questions.dat", ios::binary);
 	//ifstream a("answers.dat", ios::binary);
 	FILE* file = fopen("answers.dat", "rb");
+	FILE* file1 = fopen("questions.dat", "rb");
 
 	for (int j = 0; j < cnt; ++j) {
 		
-		q.read((char*)&tmpqst, sizeof(Question));
+		//q.read((char*)&tmpqst, sizeof(Question));
+		fread(&tmpqst, sizeof(Question), 1, file1);
 		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl;
 		
 		for (int i = 0; i < 3; ++i) {
@@ -567,8 +569,9 @@ int Read(User user)
 	}
 
 	system("pause");
-	q.close();
+	//q.close();
 	fclose(file);
+	fclose(file1);
 	//a.close();
 	Admin(user);
 	return 0;
