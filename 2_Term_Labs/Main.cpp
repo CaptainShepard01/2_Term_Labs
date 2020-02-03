@@ -142,6 +142,7 @@ int Client(User user)
 
 int Registration()
 {
+	cin.clear(); while (cin.get() != '\n');
 	User iteruser;
 	int cnt = 0;
 	ifstream f1("users.dat", ios::binary);
@@ -161,7 +162,7 @@ int Registration()
 		cout << "Enter login: ";
 		cin.clear();
 		cin.getline(cur.login, 19);
-		f1.close();
+		
 		f1.open("users.dat", ios::binary);
 		if (isFirst == 1)isRepeated = 1;
 		else {
@@ -191,9 +192,12 @@ int Registration()
 	case 2: cur.role = admin; break;
 	}
 	cur.password = md5(password, strlen(password));
-	ofstream f("users.dat", ios::app, ios::binary);
+	FILE* file = fopen("users.dat", "ab");
+	fwrite(&cur, sizeof(User), 1, file);
+	fclose(file);
+	/*ofstream f("users.dat", ios::app, ios::binary);
 	f.write((char*)& cur, sizeof(User));
-	f.close();
+	f.close();*/
 	return 0;
 }
 
@@ -522,10 +526,10 @@ int Quiz(User user)
 	answ.close();
 	system("cls");
 	system("pause");
-	cout << "Congratulations! Your points: " << points << " of " << cnt << " \n";
+	cout << "Congratulations, " << user.login << "! " << "Your points: " << points << " of " << cnt << " \n";
 	system("pause");
 	ofstream ud("userdata.dat", ios::app, ios::binary);
-	ud << points;
+	ud << user.login << ": " << points << " ";
 	delete[] mas;
 	
 	ud.close();
@@ -557,7 +561,7 @@ int Read(User user)
 		
 		//q.read((char*)&tmpqst, sizeof(Question));
 		fread(&tmpqst, sizeof(Question), 1, file1);
-		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl;
+		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl << endl;
 		
 		for (int i = 0; i < 3; ++i) {
 			//a.read((char*)&tmpansw, sizeof(Answer));
@@ -565,7 +569,7 @@ int Read(User user)
 			
 			cout << tmpansw.PK_A << ") " << tmpansw.description << " " << tmpansw.IsCorrect << " " << tmpansw.IsDelete << endl << endl;
 		}
-		cout << "///////////////////////\n\n";
+		cout << "///////////////////////\n";
 	}
 
 	system("pause");
