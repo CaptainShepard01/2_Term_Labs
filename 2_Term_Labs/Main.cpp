@@ -352,10 +352,8 @@ int QuestionCreator(User user)
 	}
 	qsttmp.close();
 
-
-	ofstream qst("questions.dat", ios::app, ios::binary);
-	/*cout << "Let's create some questions!\n______________________\n";
-	system("pause");*/
+	FILE* file = fopen("questions.dat", "ab");
+	//ofstream qst("questions.dat", ios::app, ios::binary);
 
 	cnt++;
 	Question cur;
@@ -368,16 +366,19 @@ int QuestionCreator(User user)
 	cout << "PK = " << cur.PK_Q << '\n';
 
 	cout << "Enter question: ";
-	char t;
-	//cin >> t;
 	cin.clear();
 	//while (cin.get() != '\n');
 	
 	cin.getline(cur.description, 99);
-	//cur.description[strlen(cur.description)] = '\0';
-	qst.write((char*)& cur, sizeof(Question));
+	
+
+	fwrite(&cur, sizeof(Question), 1, file);
+	//qst.write((char*)& cur, sizeof(Question));
+
 	cout << "________\nDone!\n";
-	qst.close();
+
+	//qst.close();
+	fclose(file);
 
 	system("pause");
 	system("cls");
@@ -408,7 +409,8 @@ int AnswersTyping(Question cur, int FK)
 	system("cls");
 	Answer answer[3];
 	cout << cur.description << "\n__________________\n";
-	ofstream answ("answers.dat", ios::app, ios::binary);
+	//ofstream answ("answers.dat", ios::app, ios::binary);
+	FILE* file = fopen("answers.dat", "ab");
 	int tmpint = 0;
 
 	cnt++;
@@ -427,7 +429,8 @@ int AnswersTyping(Question cur, int FK)
 	case 2: answer[0].IsCorrect = 0; break;
 	}
 	answer[0].IsDelete = 0;
-	answ.write((char*)&answer[0], sizeof(Answer));
+	fwrite(&answer[0], sizeof(Answer), 1, file);
+	//answ.write((char*)&answer[0], sizeof(Answer));
 	tmpint = 0;
 
 	cnt++;
@@ -447,7 +450,8 @@ int AnswersTyping(Question cur, int FK)
 	case 2: answer[1].IsCorrect = 0; break;
 	}
 	answer[1].IsDelete = 0;
-	answ.write((char*)&answer[1], sizeof(Answer));
+	fwrite(&answer[1], sizeof(Answer), 1, file);
+	//answ.write((char*)&answer[1], sizeof(Answer));
 	tmpint = 0;
 
 	cnt++;
@@ -467,10 +471,11 @@ int AnswersTyping(Question cur, int FK)
 	case 2: answer[2].IsCorrect = 0; break;
 	}
 	answer[2].IsDelete = 0;
-	answ.write((char*)&answer[2], sizeof(Answer));
+	fwrite(&answer[2], sizeof(Answer), 1, file);
+	//answ.write((char*)&answer[2], sizeof(Answer));
 	tmpint = 0;
-
-	answ.close();
+	fclose(file);
+	//answ.close();
 	return 0;
 }
 
@@ -544,14 +549,17 @@ int Read(User user)
 	Question tmpqst;
 	Answer tmpansw;
 	ifstream q("questions.dat", ios::binary);
-	ifstream a("answers.dat", ios::binary);
+	//ifstream a("answers.dat", ios::binary);
+	FILE* file = fopen("answers.dat", "rb");
 
 	for (int j = 0; j < cnt; ++j) {
+		
 		q.read((char*)&tmpqst, sizeof(Question));
 		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl;
 		
 		for (int i = 0; i < 3; ++i) {
-			a.read((char*)&tmpansw, sizeof(Answer));
+			//a.read((char*)&tmpansw, sizeof(Answer));
+			fread(&tmpansw, sizeof(Answer), 1, file);
 			
 			cout << tmpansw.PK_A << ") " << tmpansw.description << " " << tmpansw.IsCorrect << " " << tmpansw.IsDelete << endl << endl;
 		}
@@ -560,7 +568,8 @@ int Read(User user)
 
 	system("pause");
 	q.close();
-	a.close();
+	fclose(file);
+	//a.close();
 	Admin(user);
 	return 0;
 }
