@@ -150,6 +150,7 @@ int Registration()
 	while (f1.read((char*)& iteruser, sizeof(User))) {
 		cnt++;
 	}
+	f1.close();
 	bool isFirst = 1;
 	if (cnt > 0)isFirst = 0;
 	User cur;
@@ -176,9 +177,9 @@ int Registration()
 				isRepeated = 1;
 			}
 		}
-
+		f1.close();
 	}
-	f1.close();
+
 	cout << "Enter password: ";
 	char password[20];
 	cin.getline(password, 19);
@@ -204,39 +205,54 @@ int Registration()
 int Authorization()
 {
 	User iteruser;
-	char strpassword[20] = {};
-	bool isOk = 0;
-	while (!isOk) {
-		system("cls");
-		ifstream f("users.dat", ios::binary);
-		char login[20] = {};
-		cout << "Enter login: ";
-		cin.clear();
-		//while (cin.get() == '\n')continue;
-		cin.getline(login, 19);
-		while (f.read((char*)& iteruser, sizeof(User))) {
-			if (strcmp(iteruser.login, login) == 0) {
-				isOk = 1;
-				break;
-			}
-		}
-		f.close();
-		if (isOk == 1) {
-			int passwordmd5;
-			do {
-				system("cls");
-				cout << "Current login: " << login << '\n';
-				cout << "Enter password: ";
-				cin.getline(strpassword, 19);
-				passwordmd5 = md5(strpassword, strlen(strpassword));
-			} while (iteruser.password != passwordmd5);
-		}
+	int cnt = 0;
+	ifstream f1("users.dat", ios::binary);
 
+	while (f1.read((char*)&iteruser, sizeof(User))) {
+		cnt++;
 	}
+	f1.close();
+	if (cnt > 0) {
+		char strpassword[20] = {};
+		bool isOk = 0;
+		while (!isOk) {
+			system("cls");
+			ifstream f("users.dat", ios::binary);
+			char login[20] = {};
+			cout << "Enter login: ";
+			cin.clear();
+			//while (cin.get() == '\n')continue;
+			cin.getline(login, 19);
+			while (f.read((char*)&iteruser, sizeof(User))) {
+				if (strcmp(iteruser.login, login) == 0) {
+					isOk = 1;
+					break;
+				}
+			}
+			f.close();
+			if (isOk == 1) {
+				int passwordmd5;
+				do {
+					system("cls");
+					cout << "Current login: " << login << '\n';
+					cout << "Enter password: ";
+					cin.getline(strpassword, 19);
+					passwordmd5 = md5(strpassword, strlen(strpassword));
+				} while (iteruser.password != passwordmd5);
+			}
 
-	system("cls");
-	Authentication(iteruser);
-	return 0;
+		}
+
+		system("cls");
+		Authentication(iteruser);
+		return 0;
+	}
+	else {
+		cout << "There are no Users, registrate first!\n";
+		system("pause");
+		system("cls");
+		return 0;
+	}
 }
 
 /*int menu_create_adm()
@@ -558,15 +574,15 @@ int Read(User user)
 	FILE* file1 = fopen("questions.dat", "rb");
 
 	for (int j = 0; j < cnt; ++j) {
-		
+
 		//q.read((char*)&tmpqst, sizeof(Question));
 		fread(&tmpqst, sizeof(Question), 1, file1);
 		cout << tmpqst.PK_Q << ") " << tmpqst.description << " " << tmpqst.IsDelete << endl << endl;
-		
+
 		for (int i = 0; i < 3; ++i) {
 			//a.read((char*)&tmpansw, sizeof(Answer));
 			fread(&tmpansw, sizeof(Answer), 1, file);
-			
+
 			cout << tmpansw.PK_A << ") " << tmpansw.description << " " << tmpansw.IsCorrect << " " << tmpansw.IsDelete << endl << endl;
 		}
 		cout << "///////////////////////\n";
@@ -578,5 +594,141 @@ int Read(User user)
 	fclose(file1);
 	//a.close();
 	Admin(user);
+	return 0;
+}
+
+int Delete(User user)
+{
+	Question tmpqst;
+	ifstream quest("questions.dat", ios::binary);
+	int cnt = 0;
+	while (quest.read((char*)&tmpqst, sizeof(Question))) {
+		cnt++;
+	}
+	quest.close();
+
+	Question* mas = new Question[cnt];
+	ifstream qsttmp("questions.dat", ios::binary);
+	for (int i = 0; i < cnt; ++i) {
+		qsttmp.read((char*)&mas[i], sizeof(Question));
+	}
+	qsttmp.close();
+
+	ifstream answ("answers.dat", ios::binary);
+	Answer* ans = new Answer[cnt * 3];
+	for (int i = 0; i < cnt * 3; ++i) {
+		answ.read((char*)&ans[i], sizeof(Answer));
+	}
+	answ.close();
+
+	//Read(user);
+	for (int j = 0; j < cnt; ++j) {
+
+		cout << mas[j].PK_Q << ") " << mas[j].description << " " << mas[j].IsDelete << endl << endl;
+
+		for (int i = 0; i < 3; ++i) {
+			cout << ans[j * 3 + i].PK_A << ") " << ans[j * 3 + i].description << " " << ans[j * 3 + i].IsCorrect << " " << ans[j * 3 + i].IsDelete << endl << endl;
+		}
+		cout << "///////////////////////\n";
+	}
+	cout << "\n\nWhich would you like to delete?\n\n";
+	int choose = 0;
+	cin.clear();
+	cin >> choose;
+	mas[choose - 1].IsDelete = 1;
+	for (int i = 0; i < 3; ++i) {
+		ans[(choose - 1) * 3 + i].IsDelete = 1;
+	}
+	system("pause");
+	FILE* qst = fopen("questions.dat", "wb");
+	for (int i = 0; i < cnt; ++i) {
+		fwrite(&mas[i], sizeof(Question), 1, qst);
+	}
+	fclose(qst);
+
+	FILE* answer = fopen("answers.dat", "wb");
+	for (int i = 0; i < cnt * 3; ++i) {
+		fwrite(&ans[i], sizeof(Answer), 1, answer);
+	}
+	fclose(answer);
+
+	cout << "\nDone!\nDo you want to delete one more?\n\n";
+	cout << "1 --> Yes\n2 --> No\n\n";
+	int tmp = 0;
+	cin >> tmp;
+	switch (tmp)
+	{
+	case 1:system("cls"); Delete(user); break;
+	case 2:Admin(user); return 0;
+	}
+
+	return 0;
+}
+
+int Update(User user)
+{
+	Question tmpqst;
+	ifstream quest("questions.dat", ios::binary);
+	int cnt = 0;
+	while (quest.read((char*)&tmpqst, sizeof(Question))) {
+		cnt++;
+	}
+	quest.close();
+
+	Question* mas = new Question[cnt];
+	ifstream qsttmp("questions.dat", ios::binary);
+	for (int i = 0; i < cnt; ++i) {
+		qsttmp.read((char*)&mas[i], sizeof(Question));
+	}
+	qsttmp.close();
+
+	ifstream answ("answers.dat", ios::binary);
+	Answer* ans = new Answer[cnt * 3];
+	for (int i = 0; i < cnt * 3; ++i) {
+		answ.read((char*)&ans[i], sizeof(Answer));
+	}
+	answ.close();
+
+	//Read(user);
+	for (int j = 0; j < cnt; ++j) {
+
+		cout << mas[j].PK_Q << ") " << mas[j].description << " " << mas[j].IsDelete << endl << endl;
+
+		for (int i = 0; i < 3; ++i) {
+			cout << ans[j * 3 + i].PK_A << ") " << ans[j * 3 + i].description << " " << ans[j * 3 + i].IsCorrect << " " << ans[j * 3 + i].IsDelete << endl << endl;
+		}
+		cout << "///////////////////////\n";
+	}
+	cout << "\n\nWhich would you like to delete?\n\n";
+	int choose = 0;
+	cin.clear();
+	cin >> choose;
+	mas[choose - 1].IsDelete = 0;
+	for (int i = 0; i < 3; ++i) {
+		ans[(choose - 1) * 3 + i].IsDelete = 0;
+	}
+	system("pause");
+	FILE* qst = fopen("questions.dat", "wb");
+	for (int i = 0; i < cnt; ++i) {
+		fwrite(&mas[i], sizeof(Question), 1, qst);
+	}
+	fclose(qst);
+
+	FILE* answer = fopen("answers.dat", "wb");
+	for (int i = 0; i < cnt * 3; ++i) {
+		fwrite(&ans[i], sizeof(Answer), 1, answer);
+	}
+	fclose(answer);
+
+	cout << "\nDone!\nDo you want to delete one more?\n\n";
+	cout << "1 --> Yes\n2 --> No\n\n";
+	int tmp = 0;
+	cin >> tmp;
+	switch (tmp)
+	{
+	case 1:system("cls"); Delete(user); break;
+	case 2:Admin(user); return 0;
+	}
+
 	return 0;
 }
