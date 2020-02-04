@@ -103,8 +103,8 @@ int Admin(User user)
 		{
 		case 0: cin.clear(); while (cin.get() != '\n'); QuestionCreator(user);  return 0; break;
 		case 1: Read(user); isRunning = 0; return 0; break;
-		case 2: cout << "Update\n"; system("pause"); isRunning = 0; return 0; break;
-		case 3: cout << "Delete\n"; system("pause"); isRunning = 0; return 0; break;
+		case 2: Update(user); isRunning = 0; return 0; break;
+		case 3: Delete(user); system("pause"); isRunning = 0; return 0; break;
 		case 4: system("cls"); isRunning = 0; return 0; break;
 		}
 	}
