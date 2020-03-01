@@ -14,7 +14,7 @@ int menu();
 
 int main()
 {
-	int n = 0, key = 0;
+	int n = 0, num = 0, den = 0, key = 0;
 	cout << "How many elements?\n";
 	cin >> n;
 	system("pause");
@@ -47,13 +47,13 @@ int main()
 			system("cls");
 			Delete(*Kantor, key); break;
 		}
-		case 3:Summ(*Kantor); break;
+		case 3:Summ(*Kantor, num, den); break;
 		case 4:Add(*Kantor); break;
-		case 5:isRunning = false; return 0;
+		case 5:isRunning = false; delete Kantor; return 0;
 		}
 
 	}
-	delete Kantor;
+	return 0;
 }
 
 int menu() {

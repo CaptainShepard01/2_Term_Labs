@@ -139,9 +139,19 @@ Node* Find(NodeList nodelist, int key) {
 	return nodelist.find(key);
 };
 
-int Summ(NodeList nodelist) {
-	int sum = 0;
+void Summ(NodeList nodelist, int &sumnum, int &sumden) {
+	Node* cur = new Node;
 
-	return sum;
+	sumnum = nodelist.head->info.numerator;
+	sumden = nodelist.head->info.denominator;
+
+	while (cur) {
+		sumnum += cur->info.numerator;
+		sumden += cur->info.denominator;
+
+		cur = cur->next;
+	}
+
+	delete cur;
 };
 

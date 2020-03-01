@@ -19,5 +19,5 @@ void Delete(NodeList& nodelist, int key);
 
 Node* Find(NodeList nodelist, int key);
 
-int Summ(NodeList nodelist);
+int Summ(NodeList nodelist, int& sumnum, int& sumden);
 
