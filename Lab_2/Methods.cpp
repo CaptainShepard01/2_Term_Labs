@@ -15,12 +15,13 @@
 
 using namespace std;
 
-void ListCreator(int n, NodeList *&Kantor)
+void Adder(NodeList& nodelist, Rational current);
+
+void ListCreator(int n, NodeList*& Kantor)
 {
 	int str = 0;
 	int stlb = 0, stlbincr = 1;
 	bool s = 0;
-	int tmp = 0;
 	int tmp_str = 0;
 	Rational current;
 	int current_element = 1;
@@ -29,8 +30,14 @@ void ListCreator(int n, NodeList *&Kantor)
 		current.numerator = stlb;
 		current.denominator = str;
 		tmp_str = str;
+		current.s = s;
+		current.stlb = stlb;
+		current.str = str;
+		current.tmp_str = tmp_str;
+		current.stlbincr = stlbincr;
+
 		Kantor->addLast(current);
-		while (tmp_str != 0)
+		while (tmp_str != 0 && current_element < n)
 		{
 			current_element++;
 			tmp_str--;
@@ -48,6 +55,11 @@ void ListCreator(int n, NodeList *&Kantor)
 				break;
 			}
 			}
+			current.s = s;
+			current.stlb = stlb;
+			current.str = str;
+			current.tmp_str = tmp_str;
+			current.stlbincr = stlbincr;
 			current.number = current_element;
 			current.numerator = stlb;
 			current.denominator = tmp_str;
@@ -55,18 +67,81 @@ void ListCreator(int n, NodeList *&Kantor)
 		}
 		str++;
 		current_element++;
+		stlb = 0;
+		s = 0;
+		stlbincr = 1;
 	}
 	Kantor->Print();
+	system("pause");
 }
 
-void Add(NodeList nodelist)
+void Add(NodeList& nodelist)
 {
-     nodelist.tail;
+	int nmb = nodelist.tail->info.number + 1;
+	bool tmp_s = 0;
+	int stolbik = 0, tmp_tmp_str = 0;
+	int tmp_stlbincr = 1;
+	Rational current;
+	if (nodelist.tail->info.tmp_str != 0)
+	{
+		tmp_tmp_str = nodelist.tail->info.tmp_str - 1;
+		switch (nodelist.tail->info.s) {
+		case 0: {
+			stolbik = nodelist.tail->info.stlb - nodelist.tail->info.stlbincr;
+			tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
+			tmp_s = 1;
+			break;
+		}
+		case 1: {
+			stolbik = nodelist.tail->info.stlb + nodelist.tail->info.stlbincr;
+			tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
+			tmp_s = 0;
+			break;
+		}
+		}
+		current.s = tmp_s;
+		current.stlb = stolbik;
+		current.str = nodelist.tail->info.str;
+		current.tmp_str = tmp_tmp_str;
+		current.stlbincr = tmp_stlbincr;
+		current.number = nmb;
+		current.numerator = stolbik;
+		current.denominator = tmp_tmp_str;
+	}
+	else if (nodelist.tail->info.tmp_str == 0) {
+		current.str = nodelist.tail->info.str + 1;
+		current.tmp_str = current.str;
+		current.stlb = 0;
+		current.stlbincr = 1;
+		current.number = nmb;
+		current.numerator = stolbik;
+		current.denominator = current.str;
+		current.s = 0;
+	}
+	Adder(nodelist, current);
+	nodelist.Print();
+	system("pause");
 }
 
-void Delete() {};
+void Adder(NodeList& nodelist, Rational current) {
+	nodelist.addLast(current);
+}
 
-void Find() {};
+void Delete(NodeList& nodelist, int key) {
+	nodelist.remove(key);
+	system("cls");
+	cout << "Updated List:\n";
+	nodelist.Print();
+	system("pause");
+};
 
-void Summ() {};
+Node* Find(NodeList nodelist, int key) {
+	return nodelist.find(key);
+};
+
+int Summ(NodeList nodelist) {
+	int sum = 0;
+
+	return sum;
+};
 

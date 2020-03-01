@@ -14,14 +14,15 @@ int menu();
 
 int main()
 {
-	int n = 0;
+	int n = 0, key = 0;
 	cout << "How many elements?\n";
 	cin >> n;
+	system("pause");
+	system("cls");
 	NodeList* Kantor = new NodeList;
+	cout << "List:\n";
 	ListCreator(n, Kantor);
-	delete Kantor;
-	return 0;
-	/*bool isRunning = true;
+	bool isRunning = true;
 	while (isRunning)
 	{
 		int answer = 0;
@@ -29,14 +30,30 @@ int main()
 		answer = menu();
 		switch (answer)
 		{
-		case 0:Find(); break;
-		case 1:Delete(); break;
-		case 2:Summ(); break;
-		case 3:Add(); break;
-		case 4:isRunning = false; return 0;
+		case 0: Kantor->Print(); system("pause"); break;
+		case 1: {
+			Kantor->Print();
+			cout << "\nEnter number of target element: ";
+			cin.clear();
+			cin >> key;
+			system("cls");
+			Find(*Kantor, key); break; 
+		}
+		case 2: {
+			Kantor->Print();
+			cout << "\nEnter number of target element: ";
+			cin.clear();
+			cin >> key;
+			system("cls");
+			Delete(*Kantor, key); break;
+		}
+		case 3:Summ(*Kantor); break;
+		case 4:Add(*Kantor); break;
+		case 5:isRunning = false; return 0;
 		}
 
-	}*/
+	}
+	delete Kantor;
 }
 
 int menu() {
@@ -44,16 +61,18 @@ int menu() {
 	int code;
 	do {
 		system("cls");
-		key = (key + 5) % 5;
-		if (key == 0) cout << "-> Find element with a number" << endl;
+		key = (key + 6) % 6;
+		if (key == 0) cout << "-> Show List" << endl;
+		else  cout << "   Show List" << endl;
+		if (key == 1) cout << "-> Find element with a number" << endl;
 		else  cout << "   Find element with a number" << endl;
-		if (key == 1) cout << "-> Delete element with a number" << endl;
+		if (key == 2) cout << "-> Delete element with a number" << endl;
 		else  cout << "   Delete element with a number" << endl;
-		if (key == 2) cout << "-> Show summ of list's elements" << endl;
+		if (key == 3) cout << "-> Show summ of list's elements" << endl;
 		else  cout << "   Show summ of list's elements" << endl;
-		if (key == 3) cout << "-> Add element" << endl;
+		if (key == 4) cout << "-> Add element" << endl;
 		else  cout << "   Add element" << endl;
-		if (key == 4) cout << "-> Exit" << endl;
+		if (key == 5) cout << "-> Exit" << endl;
 		else  cout << "   Exit" << endl;
 		code = _getch();
 		if (code == 224)

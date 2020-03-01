@@ -12,10 +12,12 @@ using namespace std;
 
 void ListCreator(int n, NodeList*& Kantor);
 
-void Add();
+void Adder(NodeList& nodelist, Rational current);
+void Add(NodeList& nodelist);
 
-void Delete();
+void Delete(NodeList& nodelist, int key);
 
-void Find();
+Node* Find(NodeList nodelist, int key);
 
-void Summ();
+int Summ(NodeList nodelist);
+
