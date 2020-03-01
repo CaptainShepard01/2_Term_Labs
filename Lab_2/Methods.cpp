@@ -140,17 +140,28 @@ Node* Find(NodeList nodelist, int key) {
 };
 
 void Summ(NodeList nodelist, int &sumnum, int &sumden) {
-	Node* cur = new Node;
-
-	sumnum = nodelist.head->info.numerator;
-	sumden = nodelist.head->info.denominator;
-
-	while (cur) {
-		
-
+	Node* cur = nodelist.head;
+	while (cur->info.denominator == 0) {
 		cur = cur->next;
 	}
-
+	sumnum = cur->info.numerator;
+	sumden = cur->info.denominator;
+	while (cur) {
+		if (cur->info.denominator != 0) {
+			sumnum = sumnum * cur->info.denominator + cur->info.numerator * sumden;
+			sumden = sumden * cur->info.denominator;
+			for (int i = 1; i < min(cur->info.denominator, cur->info.numerator); ++i) {
+				if (sumnum % i == 0 && sumden % i == 0) {
+					sumnum /= i;
+					sumden /= i;
+				}
+			}
+		}
+		cur = cur->next;
+	}
+	system("cls");
+	cout << "Summ of elements of the List: " << sumnum << " / " << sumden << endl;
+	system("pause");
 	delete cur;
 };
 
