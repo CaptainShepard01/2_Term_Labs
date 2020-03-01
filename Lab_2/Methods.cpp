@@ -146,8 +146,7 @@ void Summ(NodeList nodelist, int &sumnum, int &sumden) {
 	sumden = nodelist.head->info.denominator;
 
 	while (cur) {
-		sumnum += cur->info.numerator;
-		sumden += cur->info.denominator;
+		
 
 		cur = cur->next;
 	}
