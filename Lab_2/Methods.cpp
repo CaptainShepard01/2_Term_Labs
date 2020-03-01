@@ -133,13 +133,19 @@ void Delete(NodeList& nodelist, int key) {
 	cout << "Updated List:\n";
 	nodelist.Print();
 	system("pause");
-};
+}
 
 Node* Find(NodeList nodelist, int key) {
 	return nodelist.find(key);
-};
+}
 
-void Summ(NodeList nodelist, int &sumnum, int &sumden) {
+int Min(int a, int b) {
+	bool ok = abs(a) < abs(b);
+	if (ok)return a;
+	return b;
+}
+
+void Summ(NodeList nodelist, int& sumnum, int& sumden) {
 	Node* cur = nodelist.head;
 	while (cur->info.denominator == 0) {
 		cur = cur->next;
@@ -150,7 +156,7 @@ void Summ(NodeList nodelist, int &sumnum, int &sumden) {
 		if (cur->info.denominator != 0) {
 			sumnum = sumnum * cur->info.denominator + cur->info.numerator * sumden;
 			sumden = sumden * cur->info.denominator;
-			for (int i = 1; i < min(cur->info.denominator, cur->info.numerator); ++i) {
+			for (int i = 1; i < Min(sumnum, sumden); ++i) {
 				if (sumnum % i == 0 && sumden % i == 0) {
 					sumnum /= i;
 					sumden /= i;
@@ -163,5 +169,22 @@ void Summ(NodeList nodelist, int &sumnum, int &sumden) {
 	cout << "Summ of elements of the List: " << sumnum << " / " << sumden << endl;
 	system("pause");
 	delete cur;
-};
+}
 
+
+
+void ShowFun(NodeList nodelist)
+{
+	int tmpstr = 0;
+	Node* cur = nodelist.head;
+	for (int i = 0; i < nodelist.tail->info.str; ++i) {
+		while (cur) {
+			if (cur->info.tmp_str == tmpstr)cout <<"   " << setw(3) << cur->info.numerator << "/" <<setw(3)<< cur->info.denominator;
+			cur = cur->next;
+		}
+		cout << endl;
+		tmpstr++;
+		cur = nodelist.head;
+	}
+	delete cur;
+}

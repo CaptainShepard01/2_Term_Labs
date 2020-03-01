@@ -30,7 +30,7 @@ int main()
 		answer = menu();
 		switch (answer)
 		{
-		case 0: Kantor->Print(); system("pause"); break;
+		case 0: ShowFun(*Kantor);/*Kantor->Print();*/ system("pause"); break;
 		case 1: {
 			Kantor->Print();
 			cout << "\nEnter number of target element: ";

@@ -21,3 +21,5 @@ Node* Find(NodeList nodelist, int key);
 
 void Summ(NodeList nodelist, int& sumnum, int& sumden);
 
+void ShowFun(NodeList nodelist);
+
