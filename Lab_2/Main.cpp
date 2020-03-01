@@ -1,10 +1,9 @@
+#include <stdio.h>
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
-#include <vector>
-#include <bitset>
-#include <string>
 #include <conio.h>
 #include "Header.h"
 #include "List.h"

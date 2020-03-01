@@ -1,13 +1,13 @@
 #pragma once
+#include <stdio.h>
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
-#include <vector>
-#include <bitset>
-#include <string>
 #include <conio.h>
 #include "Header.h"
+
 
 using namespace std;
 
@@ -73,8 +73,7 @@ struct NodeList {
 		Node* cur = new Node;
 		cur = head;
 		while (cur) {
-			cout << "Number of element: " << cur->info.number << ":\n";
-			cout << cur->info.numerator << " / " << cur->info.denominator << endl;
+			cout << "Number of element: " << cur->info.number << ": " << cur->info.numerator << " / " << cur->info.denominator << endl;
 			cur = cur->next;
 		}
 		return;

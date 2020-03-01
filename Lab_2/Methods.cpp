@@ -1,10 +1,14 @@
+#define _USE_CRT_NO_SECURE_WARNINGS
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
-#include <vector>
-#include <bitset>
-#include <string>
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <iomanip>
+#include <fstream>
 #include <conio.h>
 #include "Header.h"
 #include "List.h"
@@ -60,9 +64,9 @@ void Add(NodeList nodelist)
      nodelist.tail;
 }
 
-void Delete();
+void Delete() {};
 
-void Find();
+void Find() {};
 
-void Summ();
+void Summ() {};
 
