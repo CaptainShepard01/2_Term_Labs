@@ -73,54 +73,70 @@ void ListCreator(int n, NodeList*& Kantor)
 	}
 	Kantor->Print();
 	system("pause");
+	return;
 }
 
 void Add(NodeList& nodelist)
 {
-	int nmb = nodelist.tail->info.number + 1;
-	bool tmp_s = 0;
-	int stolbik = 0, tmp_tmp_str = 0;
-	int tmp_stlbincr = 1;
-	Rational current;
-	if (nodelist.tail->info.tmp_str != 0)
-	{
-		tmp_tmp_str = nodelist.tail->info.tmp_str - 1;
-		switch (nodelist.tail->info.s) {
-		case 0: {
-			stolbik = nodelist.tail->info.stlb - nodelist.tail->info.stlbincr;
-			tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
-			tmp_s = 1;
-			break;
+	if (nodelist.head != NULL) {
+		int nmb = nodelist.tail->info.number + 1;
+		bool tmp_s = 0;
+		int stolbik = 0, tmp_tmp_str = 0;
+		int tmp_stlbincr = 1;
+		Rational current;
+		if (nodelist.tail->info.tmp_str != 0)
+		{
+			tmp_tmp_str = nodelist.tail->info.tmp_str - 1;
+			switch (nodelist.tail->info.s) {
+			case 0: {
+				stolbik = nodelist.tail->info.stlb - nodelist.tail->info.stlbincr;
+				tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
+				tmp_s = 1;
+				break;
+			}
+			case 1: {
+				stolbik = nodelist.tail->info.stlb + nodelist.tail->info.stlbincr;
+				tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
+				tmp_s = 0;
+				break;
+			}
+			}
+			current.s = tmp_s;
+			current.stlb = stolbik;
+			current.str = nodelist.tail->info.str;
+			current.tmp_str = tmp_tmp_str;
+			current.stlbincr = tmp_stlbincr;
+			current.number = nmb;
+			current.numerator = stolbik;
+			current.denominator = tmp_tmp_str;
 		}
-		case 1: {
-			stolbik = nodelist.tail->info.stlb + nodelist.tail->info.stlbincr;
-			tmp_stlbincr = nodelist.tail->info.stlbincr + 1;
-			tmp_s = 0;
-			break;
+		else if (nodelist.tail->info.tmp_str == 0) {
+			current.str = nodelist.tail->info.str + 1;
+			current.tmp_str = current.str;
+			current.stlb = 0;
+			current.stlbincr = 1;
+			current.number = nmb;
+			current.numerator = stolbik;
+			current.denominator = current.str;
+			current.s = 0;
 		}
-		}
-		current.s = tmp_s;
-		current.stlb = stolbik;
-		current.str = nodelist.tail->info.str;
-		current.tmp_str = tmp_tmp_str;
-		current.stlbincr = tmp_stlbincr;
-		current.number = nmb;
-		current.numerator = stolbik;
-		current.denominator = tmp_tmp_str;
+		Adder(nodelist, current);
+		nodelist.Print();
+		system("pause");
 	}
-	else if (nodelist.tail->info.tmp_str == 0) {
-		current.str = nodelist.tail->info.str + 1;
-		current.tmp_str = current.str;
+	else {
+		Rational current;
+		current.denominator = 0;
+		current.numerator = 0;
+		current.number = 1;
+		current.s = 0;
 		current.stlb = 0;
 		current.stlbincr = 1;
-		current.number = nmb;
-		current.numerator = stolbik;
-		current.denominator = current.str;
-		current.s = 0;
+		current.str = 0;
+		current.tmp_str = 0;
+		nodelist.addLast(current);
+		system("pause"); 
 	}
-	Adder(nodelist, current);
-	nodelist.Print();
-	system("pause");
 }
 
 void Adder(NodeList& nodelist, Rational current) {
@@ -142,33 +158,42 @@ Node* Find(NodeList nodelist, int key) {
 int Min(int a, int b) {
 	bool ok = abs(a) < abs(b);
 	if (ok)return a;
-	return b;
+	else return b;
 }
 
 void Summ(NodeList nodelist, int& sumnum, int& sumden) {
-	Node* cur = nodelist.head;
-	while (cur->info.denominator == 0) {
+	if (nodelist.head != NULL) {
+		Node* cur = nodelist.head;
+		while (cur->info.denominator == 0) {
+			cur = cur->next;
+		}
+		sumnum = cur->info.numerator;
+		sumden = cur->info.denominator;
 		cur = cur->next;
-	}
-	sumnum = cur->info.numerator;
-	sumden = cur->info.denominator;
-	while (cur) {
-		if (cur->info.denominator != 0) {
-			sumnum = sumnum * cur->info.denominator + cur->info.numerator * sumden;
-			sumden = sumden * cur->info.denominator;
-			for (int i = 1; i < Min(sumnum, sumden); ++i) {
-				if (sumnum % i == 0 && sumden % i == 0) {
-					sumnum /= i;
-					sumden /= i;
+		while (cur) {
+			if (cur->info.denominator != 0) {
+				sumnum = sumnum * cur->info.denominator + cur->info.numerator * sumden;
+				sumden = sumden * cur->info.denominator;
+				int c = Min(sumnum, sumden);
+				for (int i = 1; i < c; ++i) {
+					if (sumnum % i == 0 && sumden % i == 0) {
+						sumnum = sumnum / i;
+						sumden = sumden / i;
+					}
 				}
 			}
+			cur = cur->next;
 		}
-		cur = cur->next;
+		system("cls");
+		cout << "Summ of elements of the List: " << sumnum << " / " << sumden << endl;
+		system("pause");
+		delete cur;
+		return;
 	}
-	system("cls");
-	cout << "Summ of elements of the List: " << sumnum << " / " << sumden << endl;
-	system("pause");
-	delete cur;
+	else {
+		cout << "Empty List!" << endl;
+		return;
+	}
 }
 
 
@@ -179,12 +204,15 @@ void ShowFun(NodeList nodelist)
 	Node* cur = nodelist.head;
 	for (int i = 0; i < nodelist.tail->info.str; ++i) {
 		while (cur) {
-			if (cur->info.tmp_str == tmpstr)cout <<"   " << setw(3) << cur->info.numerator << "/" <<setw(3)<< cur->info.denominator;
+			if (cur->info.tmp_str == tmpstr)cout << "   " << setw(3) << cur->info.numerator << "/" << setw(3) << cur->info.denominator;
 			cur = cur->next;
 		}
 		cout << endl;
 		tmpstr++;
 		cur = nodelist.head;
 	}
-	delete cur;
+	system("pause");
+	cur = NULL;
+	delete[] cur;
+	return;
 }

@@ -15,10 +15,11 @@ int menu();
 int main()
 {
 	int n = 0, num = 0, den = 0, key = 0;
-	cout << "How many elements?\n";
-	cin >> n;
-	system("pause");
-	system("cls");
+	do {
+		cout << "How many elements?\n";
+		cin >> n;
+		system("cls");
+	} while (n < 0);
 	NodeList* Kantor = new NodeList;
 	cout << "List:\n";
 	ListCreator(n, Kantor);
@@ -30,7 +31,7 @@ int main()
 		answer = menu();
 		switch (answer)
 		{
-		case 0: ShowFun(*Kantor);/*Kantor->Print();*/ system("pause"); break;
+		case 0: {Kantor->Print(); system("pause"); break; }
 		case 1: {
 			Kantor->Print();
 			cout << "\nEnter number of target element: ";
@@ -47,9 +48,10 @@ int main()
 			system("cls");
 			Delete(*Kantor, key); break;
 		}
-		case 3:Summ(*Kantor, num, den); break;
-		case 4:Add(*Kantor); break;
-		case 5:isRunning = false; delete Kantor; return 0;
+		case 3: {Summ(*Kantor, num, den); break; }
+		case 4: {Add(*Kantor); break; }
+		case 5: {ShowFun(*Kantor); break; }
+		case 6: {isRunning = false; delete Kantor; return 0; }
 		}
 
 	}
@@ -61,7 +63,7 @@ int menu() {
 	int code;
 	do {
 		system("cls");
-		key = (key + 6) % 6;
+		key = (key + 7) % 7;
 		if (key == 0) cout << "-> Show List" << endl;
 		else  cout << "   Show List" << endl;
 		if (key == 1) cout << "-> Find element with a number" << endl;
@@ -72,7 +74,9 @@ int menu() {
 		else  cout << "   Show summ of list's elements" << endl;
 		if (key == 4) cout << "-> Add element" << endl;
 		else  cout << "   Add element" << endl;
-		if (key == 5) cout << "-> Exit" << endl;
+		if (key == 5) cout << "-> Show fun" << endl;
+		else  cout << "   Show fun" << endl;
+		if (key == 6) cout << "-> Exit" << endl;
 		else  cout << "   Exit" << endl;
 		code = _getch();
 		if (code == 224)
