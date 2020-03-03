@@ -17,6 +17,90 @@ using namespace std;
 
 void Adder(NodeList& nodelist, Rational current);
 
+void ListCreator_alt(int n, NodeList*& Kantor)
+{
+	int str = 1;
+	int tmp_str = str;
+	int stlb = 0;
+	int tmp_stlb = stlb;
+	int stlbincr = 1, tmp_stlbincr = 1;
+	bool d = 0, s = 0, tmp_s = 0;
+	Rational current;
+	int current_element = 1;
+	for (current_element; current_element <= n;) {
+		current.numerator = stlb;
+		current.number = current_element;
+		current.denominator = str;
+		current.s = s;
+		Kantor->addLast(current);
+		current_element++;
+		if (current_element > n)break;
+		if (d == 0) {
+			str++;
+			tmp_str = str;
+			switch (s) {
+			case 0: {
+				stlb -= stlbincr;
+				s = 1;
+				stlbincr++;
+			}
+			case 1: {
+				stlb += stlbincr;
+				s = 0;
+				stlbincr++;
+			}
+			}
+			current.number = current_element;
+			current.denominator = tmp_str;
+			current.numerator = tmp_stlb;
+			current.stlbincr = stlbincr;
+			current.s = s;
+			Kantor->addLast(current);
+			current_element++;
+			if (current_element > n)break;
+			while (tmp_stlb != stlb) {
+				tmp_stlb--;
+				current.number = current_element;
+				current.denominator = tmp_str;
+				current.numerator = tmp_stlb;
+				current.stlbincr = stlbincr;
+				current.s = s;
+				switch (tmp_s) {
+				case 0: {
+					tmp_stlb -= tmp_stlbincr;
+					tmp_s = 1;
+					tmp_stlbincr++;
+				}
+				case 1: {
+					tmp_stlb += tmp_stlbincr;
+					tmp_s = 0;
+					tmp_stlbincr++;
+				}
+				}
+				Kantor->addLast(current);
+				current_element++;
+				if (current_element > n)break;
+			}
+			while (tmp_str != 1) {
+				tmp_str--;
+				current.number = current_element;
+				current.denominator = tmp_str;
+				current.numerator = tmp_stlb;
+				current.stlbincr = stlbincr;
+				current.s = s;
+				Kantor->addLast(current);
+				current_element++;
+				if (current_element > n)break;
+			}
+			d = 1;
+		}
+		else {
+
+			d = 0;
+		}
+	}
+}
+
 void ListCreator(int n, NodeList*& Kantor)
 {
 	int str = 1;
