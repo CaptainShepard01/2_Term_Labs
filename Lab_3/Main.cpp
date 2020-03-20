@@ -115,6 +115,7 @@ NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
 	for (int i = 0; i < n; ++i) {
 		a = first[i].head; b = second[i].head;
 		c = new Node; cur[i].head = c;
+		p = cur[i].head;
 		while (a && b) {
 			if (a->info.column == b->info.column) {
 				c->info.column = a->info.column;
@@ -161,9 +162,10 @@ int main()
 	NodeList* matr_2 = Linked_storage(Matrix_2);
 
 	NodeList* Summ = Summ_2_matrix(matr_1, matr_2);
-	for (int i = 0; i < n; ++i) {
+
+	/*for (int i = 0; i < n; ++i) {
 		Summ[i]->Print(n);
-	}
+	}*/
 
 	/*matr_1->Print();
 	cout << endl;
@@ -444,10 +446,10 @@ matr addM(matr a, matr b) {
 			}
 		}
 		*/
-		//printM(c); 
+//printM(c); 
 	//double m[100][100], /*mm[100][100]*/m1[100][100];
 
-	/*for (int i = 0; i < 100; i++) {
+/*for (int i = 0; i < 100; i++) {
 		for (int j = 0; j < 100; j++)
 		{
 			m[i][j] = 0;
