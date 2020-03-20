@@ -107,15 +107,15 @@ NodeList** Sequential_linked_storage(int** Matr)
 	return cur;
 }
 
-NodeList** Summ_2_matrix(NodeList** first, NodeList** second)
+/*NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
 {
 	Node* a, * b, * c, * p = new Node;
-	NodeList** cur = new NodeList*[n];
+	NodeList* cur = new NodeList[n];
 
 	for (int i = 0; i < n; ++i) {
-		a = first[i]->head; b = second[i]->head;
-		c = new Node; cur[i]->head = c;
-		p = cur[i]->head;
+		a = first[i].head; b = second[i].head;
+		c = new Node; cur[i].head = c;
+		p = cur[i].head;
 		while (a && b) {
 			if (a->info.column == b->info.column) {
 				c->info.column = a->info.column;
@@ -142,44 +142,52 @@ NodeList** Summ_2_matrix(NodeList** first, NodeList** second)
 			a = a->next;
 			p = c; c = new Node; p->next = c;
 		}
-		if (c == cur[i]->head)cur[i]->head = NULL;
+		if (c == cur[i].head)cur[i].head = NULL;
 		else p->next = NULL;
 		delete c;
 	}
 
 	return cur;
-}
+}*/
 
 int main()
 {
 	int** Matrix_1 = Matrix_creator();
 	int** Matrix_2 = Matrix_creator();
 
+	/*Print_normal_matrix(Matrix_1);
+	cout << endl;
+	Print_normal_matrix(Matrix_2);*/
+
 	Matrix_1 = Read_from_file("matrix_file_1.txt");
 	Matrix_2 = Read_from_file("matrix_file_2.txt");
 
-	NodeList* matr_1 = Linked_storage(Matrix_1);
-	NodeList* matr_2 = Linked_storage(Matrix_2);
+	/*Print_normal_matrix(Matrix_1);
+	cout << endl;
+	Print_normal_matrix(Matrix_2);*/
 
-	NodeList** matr_sq_1 = new NodeList * [n]; 
-	matr_sq_1 = Sequential_linked_storage(Matrix_1);
-	NodeList** matr_sq_2 = new NodeList * [n]; 
-	matr_sq_2 = Sequential_linked_storage(Matrix_2);
-
-	NodeList** Summ = new NodeList*[n];
-	Summ = Summ_2_matrix(matr_sq_1, matr_sq_2);
-
-	for (int i = 0; i < n; ++i) {
-		Summ[i]->Print_sequential(n);
-	}
+	/*NodeList* matr_1 = Linked_storage(Matrix_1);
+	NodeList* matr_2 = Linked_storage(Matrix_2);*/
 
 	/*matr_1->Print();
 	cout << endl;
 	matr_2->Print();*/
 
-	/*Print_normal_matrix(Matrix_1);
-	cout << endl;
-	Print_normal_matrix(Matrix_2);*/
+	NodeList** matr_sq_1 = new NodeList*[n]; 
+	matr_sq_1 = Sequential_linked_storage(Matrix_1);
+	NodeList** matr_sq_2 = new NodeList*[n]; 
+	matr_sq_2 = Sequential_linked_storage(Matrix_2);
+
+	for (int i = 0; i < n; ++i) {
+		matr_sq_1[i]->Print_sequential(n);
+	}
+
+	/*NodeList* Summ = new NodeList[n];
+	Summ = Summ_2_matrix(matr_sq_1, matr_sq_2);
+
+	for (int i = 0; i < n; ++i) {
+		Summ[i].Print_sequential(n);
+	}*/
 
 	return 0;
 }
