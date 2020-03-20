@@ -161,11 +161,15 @@ int main()
 	NodeList* matr_1 = Linked_storage(Matrix_1);
 	NodeList* matr_2 = Linked_storage(Matrix_2);
 
-	NodeList* Summ = Summ_2_matrix(matr_1, matr_2);
+	NodeList* matr_sq_1 = Sequential_linked_storage(Matrix_1);
+	NodeList* matr_sq_2 = Sequential_linked_storage(Matrix_2);
 
-	/*for (int i = 0; i < n; ++i) {
-		Summ[i]->Print(n);
-	}*/
+	NodeList* Summ = new NodeList[n];
+	Summ = Summ_2_matrix(matr_sq_1, matr_sq_2);
+
+	for (int i = 0; i < n; ++i) {
+		Summ*[i]->Print(n);
+	}
 
 	/*matr_1->Print();
 	cout << endl;
