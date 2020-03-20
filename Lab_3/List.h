@@ -86,7 +86,7 @@ struct NodeList {
 		}
 
 	}
-	void Print(int n)
+	void Print_sequential(int n)
 	{
 		Node* cur = head;
 		for (int i = 0; i < cur->info.column;++i)cout << "0";

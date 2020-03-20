@@ -88,10 +88,10 @@ NodeList* Linked_storage(int** Matr)
 	return cur;
 }
 
-NodeList* Sequential_linked_storage(int** Matr)
+NodeList** Sequential_linked_storage(int** Matr)
 {
 	Element tmp;
-	NodeList* cur = new NodeList[n];
+	NodeList** cur = new NodeList*[n];
 
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -99,7 +99,7 @@ NodeList* Sequential_linked_storage(int** Matr)
 				tmp.data = Matr[i][j];
 				tmp.column = j;
 				//tmp.row = i;    //not nessecery, because row is already stored in index massive
-				cur[i].addLast(tmp);
+				cur[i]->addLast(tmp);
 			}
 		}
 	}
@@ -107,15 +107,15 @@ NodeList* Sequential_linked_storage(int** Matr)
 	return cur;
 }
 
-NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
+NodeList** Summ_2_matrix(NodeList** first, NodeList** second)
 {
 	Node* a, * b, * c, * p = new Node;
-	NodeList* cur = new NodeList[n];
+	NodeList** cur = new NodeList*[n];
 
 	for (int i = 0; i < n; ++i) {
-		a = first[i].head; b = second[i].head;
-		c = new Node; cur[i].head = c;
-		p = cur[i].head;
+		a = first[i]->head; b = second[i]->head;
+		c = new Node; cur[i]->head = c;
+		p = cur[i]->head;
 		while (a && b) {
 			if (a->info.column == b->info.column) {
 				c->info.column = a->info.column;
@@ -142,7 +142,7 @@ NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
 			a = a->next;
 			p = c; c = new Node; p->next = c;
 		}
-		if (c == cur[i].head)cur[i].head = NULL;
+		if (c == cur[i]->head)cur[i]->head = NULL;
 		else p->next = NULL;
 		delete c;
 	}
@@ -161,14 +161,16 @@ int main()
 	NodeList* matr_1 = Linked_storage(Matrix_1);
 	NodeList* matr_2 = Linked_storage(Matrix_2);
 
-	NodeList* matr_sq_1 = Sequential_linked_storage(Matrix_1);
-	NodeList* matr_sq_2 = Sequential_linked_storage(Matrix_2);
+	NodeList** matr_sq_1 = new NodeList * [n]; 
+	matr_sq_1 = Sequential_linked_storage(Matrix_1);
+	NodeList** matr_sq_2 = new NodeList * [n]; 
+	matr_sq_2 = Sequential_linked_storage(Matrix_2);
 
-	NodeList* Summ = new NodeList[n];
+	NodeList** Summ = new NodeList*[n];
 	Summ = Summ_2_matrix(matr_sq_1, matr_sq_2);
 
 	for (int i = 0; i < n; ++i) {
-		Summ*[i]->Print(n);
+		Summ[i]->Print_sequential(n);
 	}
 
 	/*matr_1->Print();
