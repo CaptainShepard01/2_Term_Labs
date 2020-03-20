@@ -10,14 +10,12 @@
 
 using namespace std;
 
-struct Rational {
-	int number = 0, numerator = 0, denominator = 0;
-	int str = 0, stlb = 0, stlbincr = 1, tmp_str = 0;
-	bool s = 0;
+struct Element {
+	int data = 0, row = 0, column = 0;
 };
 
 struct Node {
-	Rational info;
+	Element info;
 	Node* next;
 	Node* prev;
 };
@@ -26,7 +24,7 @@ struct NodeList {
 	Node* head = NULL;
 	Node* tail = NULL;
 
-	void addLast(Rational i) {
+	void addLast(Element i) {
 		Node* node = new Node;
 		node->info = i;
 		node->next = NULL;
@@ -45,13 +43,9 @@ struct NodeList {
 		Node* cur = head;
 		while (cur)
 		{
-			if (cur->info.number == key)break;
+			if (cur->info.data == key)break;
 			cur = cur->next;
 		}
-		if (cur != NULL) { system("cls"); cout << "Here you are: " << cur->info.numerator << " / " << cur->info.denominator << endl; }
-		else cout << "There is no element with this number in list!" << endl;
-		system("pause");
-		system("cls");
 		return cur;
 	}
 
@@ -92,14 +86,14 @@ struct NodeList {
 		}
 
 	}
-	void Print()
+	void Print(int n)
 	{
-		Node* cur = new Node;
-		cur = head;
-		while (cur) {
-			cout << "Number of element: " << cur->info.number << ": " << cur->info.numerator << " / " << cur->info.denominator << endl;
-			cur = cur->next;
-		}
+		Node* cur = head;
+		for (int i = 0; i < cur->info.column;++i)cout << "0";
+		cout << cur->info.data;
+		for (int i = cur->info.column + 1; i < n; ++i)cout << "0";
+		cout << endl;
+		system("pause");
 		return;
 	}
 };

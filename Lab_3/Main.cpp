@@ -1,4 +1,4 @@
-/*#include <stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -8,17 +8,179 @@
 #include "List.h"
 
 using namespace std;
+const int n = 100;
+
+int** Matrix_creator()
+{
+	int** Matrix = new int* [n];
+	for (int i = 0; i < n; ++i) {
+		Matrix[i] = new int[n];
+		for (int j = 0; j < n; ++j) Matrix[i][j] = 0;
+	}
+	return Matrix;
+}
+
+void Write_in_file(const char* filename)
+{
+	int tmp = 0;
+	ofstream matr_file(filename, ios::beg);
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			tmp = rand() % 20 - 10;
+			matr_file << tmp;
+		}
+		matr_file << '\n';
+	}
+
+	matr_file.close();
+}
+
+void Print_normal_matrix(int** matrix)
+{
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j)
+			cout << matrix[i][j] << " ";
+		cout << endl;
+	}
+}
+
+int** Read_from_file(const char* filename)
+{
+	int tmp = 0;
+	int** Matrix = new int* [n];
+	for (int i = 0; i < n; ++i) {
+		Matrix[i] = new int[n];
+		for (int j = 0; j < n; ++j) Matrix[i][j] = 0;
+	}
+
+
+	ifstream matr_file(filename, ios::beg);
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			matr_file >> Matrix[i][j];
+		}
+	}
+
+	//Print_normal_matrix(Matrix);
+
+	matr_file.close();
+	return Matrix;
+}
+
+NodeList* Linked_storage(int** Matr)
+{
+	Element tmp;
+	NodeList* cur = new NodeList;
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			if (Matr[i][j] != 0) {
+				tmp.data = Matr[i][j];
+				tmp.row = i;
+				tmp.column = j;
+				cur->addLast(tmp);
+			}
+		}
+	}
+
+	return cur;
+}
+
+NodeList* Sequential_linked_storage(int** Matr)
+{
+	Element tmp;
+	NodeList* cur = new NodeList[n];
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			if (Matr[i][j] != 0) {
+				tmp.data = Matr[i][j];
+				tmp.column = j;
+				//tmp.row = i;    //not nessecery, because row is already stored in index massive
+				cur[i].addLast(tmp);
+			}
+		}
+	}
+
+	return cur;
+}
+
+NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
+{
+	Node* a, * b, * c, * p = new Node;
+	NodeList* cur = new NodeList[n];
+
+	for (int i = 0; i < n; ++i) {
+		a = first[i].head; b = second[i].head;
+		c = new Node; cur[i].head = c;
+		while (a && b) {
+			if (a->info.column == b->info.column) {
+				c->info.column = a->info.column;
+				c->info.data = a->info.data + b->info.data;
+			}
+			else if (a->info.column < b->info.column) {
+				c->info.column = a->info.column;
+				c->info.data = a->info.data;
+				a = a->next;
+			}
+			else {
+				c->info.column = b->info.column;
+				c->info.data = b->info.data;
+				b = b->next;
+			}
+			if (c->info.data) {
+				p = c; c = new Node; p->next = c;
+			}
+		}
+		if (b)a = b;
+		while (a) {
+			c->info.column = a->info.column;
+			c->info.data = a->info.data;
+			a = a->next;
+			p = c; c = new Node; p->next = c;
+		}
+		if (c == cur[i].head)cur[i].head = NULL;
+		else p->next = NULL;
+		delete c;
+	}
+
+	return cur;
+}
 
 int main()
 {
-	cout << "Hello, bitch!";
+	int** Matrix_1 = Matrix_creator();
+	int** Matrix_2 = Matrix_creator();
+
+	Matrix_1 = Read_from_file("matrix_file_1.txt");
+	Matrix_2 = Read_from_file("matrix_file_2.txt");
+
+	NodeList* matr_1 = Linked_storage(Matrix_1);
+	NodeList* matr_2 = Linked_storage(Matrix_2);
+
+	NodeList* Summ = Summ_2_matrix(matr_1, matr_2);
+	for (int i = 0; i < n; ++i) {
+		Summ[i]->Print(n);
+	}
+
+	/*matr_1->Print();
+	cout << endl;
+	matr_2->Print();*/
+
+	/*Print_normal_matrix(Matrix_1);
+	cout << endl;
+	Print_normal_matrix(Matrix_2);*/
+
 	return 0;
-}*/
+}
+
 
 // labka9.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
-#include <iostream>
+/*#include <iostream>
 #include <fstream>
 using namespace std;
 struct matrE {
@@ -283,9 +445,9 @@ matr addM(matr a, matr b) {
 		}
 		*/
 		//printM(c); 
-	double m[100][100], /*mm[100][100]*/m1[100][100];
+	//double m[100][100], /*mm[100][100]*/m1[100][100];
 
-	for (int i = 0; i < 100; i++) {
+	/*for (int i = 0; i < 100; i++) {
 		for (int j = 0; j < 100; j++)
 		{
 			m[i][j] = 0;
@@ -404,6 +566,7 @@ int main()
 	r = multM(m, mm);
 	printM(r);
 }
+*/
 
 
 
