@@ -95,19 +95,4 @@ struct NodeList {
 			cur = cur->next;
 		}
 	}
-	void Print_sequential(int n)
-	{
-		Node* cur = head;
-		while(cur){
-			cout << cur->info.data << " ";
-			cur = cur->next;
-		}
-		cout << endl;
-		/*for (int i = 0; i < cur->info.column;++i)cout << "0";
-		cout << cur->info.data;
-		for (int i = cur->info.column + 1; i < n; ++i)cout << "0";
-		cout << endl;*/
-		system("pause");
-		return;
-	}
 };

@@ -92,13 +92,16 @@ NodeList** Sequential_linked_storage(int** Matr)
 {
 	Element tmp;
 	NodeList** cur = new NodeList*[n];
+	for (int i = 0; i < n; ++i) {
+		cur[i] = new NodeList;
+	}
 
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
 			if (Matr[i][j] != 0) {
 				tmp.data = Matr[i][j];
 				tmp.column = j;
-				//tmp.row = i;    //not nessecery, because row is already stored in index massive
+				tmp.row = i;    //not nessecery, because row is already stored in index massive
 				cur[i]->addLast(tmp);
 			}
 		}
@@ -107,19 +110,99 @@ NodeList** Sequential_linked_storage(int** Matr)
 	return cur;
 }
 
-/*NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
+void Print_sequential_storage(NodeList** nodelist)
 {
-	Node* a, * b, * c, * p = new Node;
-	NodeList* cur = new NodeList[n];
+	for (int i = 0; i < n; ++i) {
+		nodelist[i]->Print();
+	}
+}
+
+NodeList* Summ_2_matrix(NodeList* first, NodeList* second)
+{
+	Node* a = new Node, * b = new Node, * c = new Node, * p = new Node;
+	NodeList* cur = new NodeList;
 
 	for (int i = 0; i < n; ++i) {
-		a = first[i].head; b = second[i].head;
-		c = new Node; cur[i].head = c;
-		p = cur[i].head;
+		for (int j = 0; j < n; ++j) {
+			a = first->head;
+			b = second->head;
+			c = new Node;
+			cur->head = c;
+			p = cur->head;
+			while (a && b) {
+				if (a->info.row == b->info.row && a->info.column == b->info.column) {
+					c->info.column = a->info.column;
+					c->info.row = a->info.row;
+					c->info.data = a->info.data + b->info.data;
+					a = a->next;
+					b = b->next;
+				}
+				else if (a->info.row == b->info.row && a->info.column < b->info.column) {
+					c->info.column = a->info.column;
+					c->info.row = a->info.row;
+					c->info.data = a->info.data;
+					a = a->next;
+				}
+				else if (a->info.row == b->info.row && a->info.column > b->info.column) {
+					c->info.column = b->info.column;
+					c->info.row = b->info.row;
+					c->info.data = b->info.data;
+					b = b->next;
+				}
+				else if (a->info.row < b->info.row) {
+					c->info.column = a->info.column;
+					c->info.row = a->info.row;
+					c->info.data = a->info.data;
+					a = a->next;
+				}
+				else if (a->info.row > b->info.row) {
+					c->info.column = b->info.column;
+					c->info.row = b->info.row;
+					c->info.data = b->info.data;
+					b = b->next;
+				}
+				if (c->info.data) {
+					p = c;
+					c = new Node;
+					p->next = c;
+				}
+			}
+			if (b)a = b;
+			while (a) {
+				c->info.column = a->info.column;
+				c->info.row = a->info.row;
+				c->info.data = a->info.data;
+				a = a->next;
+				p = c;
+				c = new Node;
+				p->next = c;
+			}
+			if (c == cur->head)cur->head = NULL;
+			else p->next = NULL;
+			delete c;
+		}
+	}
+	delete a, b, c, p;
+	return cur;
+}
+
+NodeList** Summ_2_matrix_sequential(NodeList** first, NodeList** second)
+{
+	Node* a = new Node, * b = new Node, * c = new Node, * p = new Node;
+	NodeList** cur = new NodeList*[n];
+	for (int i = 0; i < n; ++i) {
+		cur[i] = new NodeList;
+	}
+	for (int i = 0; i < n; ++i) {
+		a = first[i]->head; b = second[i]->head;
+		c = new Node; cur[i]->head = c;
+		p = cur[i]->head;
 		while (a && b) {
 			if (a->info.column == b->info.column) {
 				c->info.column = a->info.column;
 				c->info.data = a->info.data + b->info.data;
+				a = a->next;
+				b = b->next;
 			}
 			else if (a->info.column < b->info.column) {
 				c->info.column = a->info.column;
@@ -142,13 +225,65 @@ NodeList** Sequential_linked_storage(int** Matr)
 			a = a->next;
 			p = c; c = new Node; p->next = c;
 		}
-		if (c == cur[i].head)cur[i].head = NULL;
+		if (c == cur[i]->head)cur[i]->head = NULL;
 		else p->next = NULL;
 		delete c;
 	}
-
+	delete a, b, c, p;
 	return cur;
-}*/
+}
+
+void Print_matrix_linked(NodeList* matrix)
+{
+	if (matrix->head != NULL) {
+		Node* cur = new Node;
+		cur = matrix->head;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (cur != NULL && cur->info.row == i && cur->info.column == j) {
+					cout <<setw(4)<< cur->info.data;
+					cur = cur->next;
+				}
+				else {
+					cout<< setw(4)<< '0';
+				}
+			}
+			cout << endl;
+		}
+		delete cur;
+		return;
+	}
+	else {
+		cout << "You haven't created linked-storaged matrix yet!\n";
+		return;
+	}
+}
+
+void Print_matrix_sequential(NodeList** matrix)
+{
+	if (matrix[0]->head != NULL) {
+		Node* cur = new Node;
+		for(int i = 0;i<n;++i) {
+			cur = matrix[i]->head;
+			for (int j = 0; j < n; ++j) {
+				if (cur != NULL && cur->info.column == j) {
+					cout << setw(4) << cur->info.data;
+					cur = cur->next;
+				}
+				else {
+					cout << setw(4) << '0';
+				}
+			}
+		}
+		delete cur;
+		return;
+	}
+	else {
+		cout << "You haven't created linked-sequential-storaged matrix yet!\n";
+		return;
+	}
+	
+}
 
 int main()
 {
@@ -166,29 +301,39 @@ int main()
 	cout << endl;
 	Print_normal_matrix(Matrix_2);*/
 
-	/*NodeList* matr_1 = Linked_storage(Matrix_1);
-	NodeList* matr_2 = Linked_storage(Matrix_2);*/
-
-	/*matr_1->Print();
-	cout << endl;
-	matr_2->Print();*/
+	NodeList* matr_1 = Linked_storage(Matrix_1);
+	NodeList* matr_2 = Linked_storage(Matrix_2);
 
 	NodeList** matr_sq_1 = new NodeList*[n]; 
 	matr_sq_1 = Sequential_linked_storage(Matrix_1);
 	NodeList** matr_sq_2 = new NodeList*[n]; 
 	matr_sq_2 = Sequential_linked_storage(Matrix_2);
 
+	NodeList** summ_sq = new NodeList * [n];
+	summ_sq = Summ_2_matrix_sequential(matr_sq_1, matr_sq_2);
+	
+	NodeList* summ = new NodeList;
+	summ = Summ_2_matrix(matr_1, matr_2);
+
+	//Print_matrix_linked(matr_1
+	//Print_matrix_sequential(summ_sq);
+
+	/*matr_1->Print();
+	cout << endl;
+	matr_2->Print();
+	cout << endl;
+	summ->Print();*/
+
+	/*Print_sequential_storage(matr_sq_1);
+	cout << endl;
+	Print_sequential_storage(matr_sq_2);
+	cout << endl;
+	Print_sequential_storage(summ);*/
+		
 	for (int i = 0; i < n; ++i) {
-		matr_sq_1[i]->Print_sequential(n);
+		delete Matrix_1[i], Matrix_2[i], matr_sq_1[i], matr_sq_2[i], summ_sq[i];
 	}
-
-	/*NodeList* Summ = new NodeList[n];
-	Summ = Summ_2_matrix(matr_sq_1, matr_sq_2);
-
-	for (int i = 0; i < n; ++i) {
-		Summ[i].Print_sequential(n);
-	}*/
-
+	delete matr_1, matr_2, Matrix_1, Matrix_2, matr_sq_1, matr_sq_2, summ_sq;
 	return 0;
 }
 
