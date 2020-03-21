@@ -11,11 +11,26 @@
 
 using namespace std;
 
+int Counter(const char* filename) {
+	int count = 0;
+	char tmp;
+	ifstream counter_file("matrix_file_1.txt");
+	while (!counter_file.eof()) {
+		counter_file.get(tmp);
+		if (tmp == ' ')count++;
+		if (tmp == '\n') break;
+	}
+	count++;
+	counter_file.close();
+	return count;
+}
+
 int menu();
 
 int main()
 {
-	int n = 100;
+	int n = Counter("matrix_file_1.txt");
+
 	int key = 0;
 	bool isRunning = 1;
 	int** Matrix_1 = Matrix_creator(n);
