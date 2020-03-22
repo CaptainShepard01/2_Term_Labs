@@ -14,7 +14,7 @@ using namespace std;
 int Counter(const char* filename) {
 	int count = 0;
 	char tmp;
-	ifstream counter_file("matrix_file_1.txt");
+	ifstream counter_file(filename);
 	while (!counter_file.eof()) {
 		counter_file.get(tmp);
 		if (tmp == ' ')count++;
@@ -29,15 +29,15 @@ int menu();
 
 int main()
 {
-	int n = Counter("matrix_file_1.txt");
+	int n = Counter("matrix_file_tmp_1.txt");
 
 	int key = 0;
 	bool isRunning = 1;
 	int** Matrix_1 = Matrix_creator(n);
 	int** Matrix_2 = Matrix_creator(n);
 	
-	Matrix_1 = Read_from_file("matrix_file_1.txt", n);
-	Matrix_2 = Read_from_file("matrix_file_2.txt", n);
+	Matrix_1 = Read_from_file("matrix_file_tmp_1.txt", n);
+	Matrix_2 = Read_from_file("matrix_file_tmp_1.txt", n);
 	/*Print_normal_matrix(Matrix_2);
 	system("pause");*/
 	NodeList* matr_1 = new NodeList;
