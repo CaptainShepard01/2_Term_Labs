@@ -29,15 +29,15 @@ int menu();
 
 int main()
 {
-	int n = Counter("matrix_file_tmp_1.txt");
+	int n = Counter("matrix_file_1.txt");
 
 	int key = 0;
 	bool isRunning = 1;
 	int** Matrix_1 = Matrix_creator(n);
 	int** Matrix_2 = Matrix_creator(n);
 	
-	Matrix_1 = Read_from_file("matrix_file_tmp_1.txt", n);
-	Matrix_2 = Read_from_file("matrix_file_tmp_1.txt", n);
+	Matrix_1 = Read_from_file("matrix_file_1.txt", n);
+	Matrix_2 = Read_from_file("matrix_file_2.txt", n);
 	/*Print_normal_matrix(Matrix_2);
 	system("pause");*/
 	NodeList* matr_1 = new NodeList;
@@ -104,6 +104,22 @@ int main()
 			break;
 		}
 		case 5: {
+			n = Counter("Matrix insert.txt");
+			Matrix_1 = Read_from_file("Matrix insert.txt", n);
+			matr_sq_1 = Sequential_linked_storage(Matrix_1, n);
+			Print_matrix_sequential(matr_sq_1, n);
+			cout << '*' << endl;
+			matr_sq_2 = Sequential_linked_storage(Matrix_1, n);
+			Print_matrix_sequential(matr_sq_2, n);
+			matr_sq_2 = Sequential_linked_storage_reverse(Matrix_1, n);
+			mult_sq = Matr_multiplication(matr_sq_1, matr_sq_2, n);
+			cout << "Matrix-multiplication of two matrixes:\n\n";
+			Print_matrix_sequential(mult_sq, n);
+			cout << endl;
+			system("pause");
+			break;
+		}
+		case 6: {
 			for (int i = 0; i < n; ++i) {
 				delete Matrix_1[i], Matrix_2[i], matr_sq_1[i], matr_sq_2[i], summ_sq[i], mult_sq[i];
 			}
@@ -120,7 +136,7 @@ int menu() {
 	int code;
 	do {
 		system("cls");
-		key = (key + 6) % 6;
+		key = (key + 7) % 7;
 		if (key == 0) cout << "-> Linked_storage" << endl;
 		else  cout << "   Linked_storage" << endl;
 		if (key == 1) cout << "-> Sequential_linked_storage" << endl;
@@ -129,9 +145,11 @@ int menu() {
 		else  cout << "   Summ_2_matrix" << endl;
 		if (key == 3) cout << "-> Summ_2_matrix_sequential" << endl;
 		else  cout << "   Summ_2_matrix_sequential" << endl;
-		if (key == 4) cout << "-> Multiplication of two matrixes" << endl;
-		else  cout << "   Multiplication of two matrixes" << endl;
-		if (key == 5) cout << "-> Exit" << endl;
+		if (key == 4) cout << "-> Multiplication of two blow-off matrixes" << endl;
+		else  cout << "   Multiplication of two blow-off matrixes" << endl;
+		if (key == 5) cout << "-> Multiplication of two matrixes from file (Matrix insert.txt)" << endl;
+		else  cout << "   Multiplication of two matrixes from file (Matrix insert.txt)" << endl;
+		if (key == 6) cout << "-> Exit" << endl;
 		else  cout << "   Exit" << endl;
 		code = _getch();
 		if (code == 224)

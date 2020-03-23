@@ -316,7 +316,12 @@ void Print_matrix_linked(NodeList* matrix, int n)
 		return;
 	}
 	else {
-		cout << "You haven't created linked-storaged matrix yet!\n";
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cout << setw(4) << '0';
+			}
+			cout << endl;
+		}
 		return;
 	}
 }
@@ -342,7 +347,12 @@ void Print_matrix_sequential(NodeList** matrix, int n)
 		return;
 	}
 	else {
-		cout << "You haven't created linked-sequential-storaged matrix yet!\n";
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cout << setw(4) << '0';
+			}
+			cout << endl;
+		}
 		return;
 	}
 
@@ -369,7 +379,12 @@ void Print_matrix_sequential_reverse(NodeList** matrix, int n)
 		return;
 	}
 	else {
-		cout << "You haven't created linked-sequential-storaged matrix yet!\n";
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cout << setw(4) << '0';
+			}
+			cout << endl;
+		}
 		return;
 	}
 
