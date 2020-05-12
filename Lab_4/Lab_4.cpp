@@ -233,77 +233,48 @@ char* substringRight = new char[100];
 
 Stack* skobki = new Stack;
 
-int SkobkiCount(char* c)// List* &useful)
-{
-	int counter = 0;
-	int i = 0;
-	char* temp_1 = new char[1];
-	temp_1[0] = '(';
-	char* temp_2 = new char[1];
-	temp_2[0] = ')';
-	while (c[i] != '\0') {
-		if (c[i] == '(') {
-			counter++;
-			//useful->addLast(temp_1);
-		}
-		if (c[i] == ')') {
-			counter++;
-			//useful->addLast(temp_2);
-		}
-		i++;
-	}
-	delete[] temp_1, temp_2;
-	return counter;
-}
-
-void isCorrectStr(char* c, int& k)                               //TODO check for "(...)"
-{
-	char* temp_1 = new char[1];
-	char* temp_2 = new char[1];
-	temp_1[0] = '(';
-	temp_2[0] = ')';
-	int i = 0;
-	while (c[i] != '\0') {
-		if (c[i] == '(') {
-			skobki->push(temp_1);
-
-		}
-		if (c[i] == ')') {
-			skobki->push(temp_2);
-
-		}
-		i++;
-	}
-
-}
-
-void SkobkiRec(char* c, int& i) {
-	while (c[i] != ')') {
-		i++;
-		if (c[i] == '(')SkobkiRec(c, i);
-	}
-	return;
-}
-
 Node* ExpressionTree(char* c, Stack*& stack)
 {
-	//int skobkicnt = 0;
-	//skobkicnt = SkobkiCount(c);
-	if (c[0] == '(' && c[strlen(c) - 1] == ')'/* && skobkicnt == 2*/) {
-		for (int j = 0; j < strlen(c) - 2; ++j)c[j] = c[j + 1];
-		c[strlen(c) - 2] = '\0';
+	int cnt = 0;
+	int i = 0;
+	int iter = 0;
+	while (c[i] != '\0') {
+		if (c[i] == '(') {
+			iter = i;
+			cnt++; i++; while (c[i] != '\0') {
+				if (c[i] == '(')cnt++;
+				if (c[i] == ')')cnt--;
+				if (cnt == 0 && i == strlen(c) - 1 && iter == 0) {
+					for (int j = 0; j < strlen(c) - 2; ++j)c[j] = c[j + 1];
+					c[strlen(c) - 2] = '\0';
+					break;
+				}
+				if (cnt == 0)break;
+				if (cnt != 0 && i == strlen(c) - 1) {
+					cout << "Wrong string!\n";
+					return NULL;
+				}
+				i++;
+			}
+			break;
+		}
+		i++;
 	}
+	i = 0;
+	cnt = 0;
 	if (strlen(c) == 1) {
 		Node* node = new Node; node->value[0] = c[0]; node->value[1] = '\0'; return node;
 	}
 
-	int i = 0;
 	while (c[i] != '\0') {
-		//SkobkiRec(c, i);
+
 		if (c[i] == '(') {
-			while (c[i] != ')') {
-				i++;
-			}
+			cnt++;
+		}
+		while (cnt != 0) {
+			i++;
+			if (c[i] == '(')cnt++;
+			if (c[i] == ')')cnt--;
 		}
 		if (c[i] == '+' || c[i] == '-') {
 			Node* node = new Node;
@@ -312,36 +283,52 @@ Node* ExpressionTree(char* c, Stack*& stack)
 
 			if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
 			else { node->value[0] = 43; node->value[1] = '\0'; }
+			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) {
+				int j = 0;
+				for (j = i + 1; j < strlen(c); ++j) substringRight[j - (i + 1)] = c[j];
+				substringRight[strlen(c) - (i + 1)] = '\0';
 
-			char* temp = new char[20];
-			for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
-			int j = 0;
-			for (j = 0; j < i; j++) {
-				substringLeft[j] = c[j];
+				substringRight[strlen(stack->peek()->value)] = '\0';
+
+				node->right = ExpressionTree(substringRight, stack);
+				return node;
 			}
-			substringLeft[j] = '\0';
-			for (j = i + 1; j < strlen(c); ++j) substringRight[j - (i + 1)] = c[j];
-			substringRight[strlen(c) - (i + 1)] = '\0';
+			else {
+				char* temp = new char[20];
+				for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
+				int j = 0;
+				for (j = 0; j < i; j++) {
+					substringLeft[j] = c[j];
+				}
+				substringLeft[j] = '\0';
 
-			stack->push(substringRight);
-			node->left = ExpressionTree(substringLeft, stack);
+				for (j = i + 1; j < strlen(temp); ++j) substringRight[j - (i + 1)] = c[j];
+				substringRight[strlen(temp) - (i + 1)] = '\0';
 
-			for (int h = 0; h < strlen(stack->peek()->value); ++h) substringRight[h] = stack->peek()->value[h];
-			substringRight[strlen(stack->peek()->value)] = '\0';
-			stack->pop();
+				stack->push(substringRight);
+				node->left = ExpressionTree(substringLeft, stack);
 
-			node->right = ExpressionTree(substringRight, stack);
-			return node;
+				for (int h = 0; h < strlen(stack->peek()->value); ++h) substringRight[h] = stack->peek()->value[h];
+				substringRight[strlen(stack->peek()->value)] = '\0';
+				stack->pop();
+
+				node->right = ExpressionTree(substringRight, stack);
+				return node;
+			}
 		}
 		i++;
 	}
 
+	cnt = 0;
 	i = 0;
 	while (c[i] != '\0') {
 		if (c[i] == '(') {
-			while (c[i] != ')') {
-				i++;
-			}
+			cnt++;
+		}
+		while (cnt != 0) {
+			i++;
+			if (c[i] == '(')cnt++;
+			if (c[i] == ')')cnt--;
 		}
 		if (c[i] == '*' || c[i] == '/') {
 			Node* node = new Node;
@@ -376,13 +363,18 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		i++;
 	}
 
+	cnt = 0;
 	i = 0;
 	while (c[i] != '\0') {
 		if (c[i] == '(') {
-			while (c[i] != ')') {
-				i++;
-			}
+			cnt++;
 		}
+		while (cnt != 0) {
+			i++;
+			if (c[i] == '(')cnt++;
+			if (c[i] == ')')cnt--;
+		}
+
 		if (c[i] == 'c' && c[i + 1] == 'o' && c[i + 2] == 's') {
 			int k = i + 3;
 			Node* node = new Node;
@@ -398,13 +390,18 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		i++;
 	}
 
+	cnt = 0;
 	i = 0;
 	while (c[i] != '\0') {
 		if (c[i] == '(') {
-			while (c[i] != ')') {
-				i++;
-			}
+			cnt++;
 		}
+		while (cnt != 0) {
+			i++;
+			if (c[i] == '(')cnt++;
+			if (c[i] == ')')cnt--;
+		}
+
 		if (c[i] == 's' && c[i + 1] == 'i' && c[i + 2] == 'n') {
 			int k = i + 3;
 			Node* node = new Node;
@@ -437,7 +434,7 @@ int main()
 	char* expr = getString();
 	tree->root = ExpressionTree(expr, stringstack);
 	int level = 0;
-	tree->printPostorder(tree->root); cout << endl;
+	tree->printPostorder(tree->root); cout << endl << endl;
 	tree->print_tree(tree->root, level);
 	delete[] tree, stringstack;
 	return 0;
