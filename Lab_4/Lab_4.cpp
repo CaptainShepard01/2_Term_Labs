@@ -11,9 +11,13 @@
 #include "Header.h"
 using namespace std;
 
+char* substringLeft = new char[100];
+char* substringRight = new char[100];
+
 struct Node
 {
-	char* value = new char[3];
+	char* value = new char[10];
+	double data = 0;
 	Node* right = nullptr; Node* left = nullptr;
 };
 
@@ -60,8 +64,6 @@ struct Stack {
 	};
 };
 
-
-
 struct Tree
 {
 	Node* root = nullptr;
@@ -100,6 +102,24 @@ struct Tree
 
 		// now deal with the node 
 		cout << node->value << " ";
+	}
+	void variable_redefiner(Node* p, char* v, float ins)
+	{
+		if (p) {
+			variable_redefiner(p->left,v, ins);
+			if (strcmp(p->value, v) == 0) {
+				int ret = snprintf(p->value, sizeof p->value, "%f", ins);
+				if (ret < 0) {
+					cout << "Something went wrong!\n";
+					system("pause");
+					return;
+				}
+				if (ret >= sizeof p->value) {
+					 //Result was truncated - resize the buffer and retry.
+				}
+			}
+			variable_redefiner(p->right,v, ins);
+		}
 	}
 };
 
@@ -228,10 +248,29 @@ struct List {
 	}
 };
 
-char* substringLeft = new char[100];
-char* substringRight = new char[100];
 
-Stack* skobki = new Stack;
+
+bool isFloat(char* v, double&ins)
+{
+	int i = 0;
+	char* c = new char[strlen(v)];
+	for (i; i < strlen(v); ++i)c[i] = v[i];
+	i = 0;
+	bool isMinus = 0;
+	if (v[0] == '~') {
+		isMinus = 1;
+		for (i+1; i < strlen(v); ++i)c[i-1] = v[i];
+		c[strlen(v) - 1] = '\0';
+	}
+	i = 0;
+	for (i; i < strlen(v); ++i) {
+		if ((c[i] < '0' || c[i]>'9') && c[i] != '.')return false;
+	}
+	ins = strtod(c, NULL);
+	delete[] c;
+	if (isMinus)ins = ins * (-1);
+	return true;
+}
 
 Node* ExpressionTree(char* c, Stack*& stack)
 {
@@ -283,16 +322,8 @@ Node* ExpressionTree(char* c, Stack*& stack)
 
 			if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
 			else { node->value[0] = 43; node->value[1] = '\0'; }
-			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) {
-				int j = 0;
-				for (j = i + 1; j < strlen(c); ++j) substringRight[j - (i + 1)] = c[j];
-				substringRight[strlen(c) - (i + 1)] = '\0';
-
-				substringRight[strlen(stack->peek()->value)] = '\0';
-
-				node->right = ExpressionTree(substringRight, stack);
-				return node;
-			}
+			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) c[i] = '~';
+			
 			else {
 				char* temp = new char[20];
 				for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
@@ -378,7 +409,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		if (c[i] == 'c' && c[i + 1] == 'o' && c[i + 2] == 's') {
 			int k = i + 3;
 			Node* node = new Node;
-			node->value[0] = 'c'; node->value[1] = 'o'; node->value[2] = 's';
+			node->value[0] = 'c'; node->value[1] = 'o'; node->value[2] = 's'; node->value[3] = '\0';
 			for (k; k < strlen(c); ++k)
 			{
 				substringRight[k - (i + 3)] = c[k];
@@ -405,7 +436,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		if (c[i] == 's' && c[i + 1] == 'i' && c[i + 2] == 'n') {
 			int k = i + 3;
 			Node* node = new Node;
-			node->value[0] = 's'; node->value[1] = 'i'; node->value[2] = 'n';
+			node->value[0] = 's'; node->value[1] = 'i'; node->value[2] = 'n'; node->value[3] = '\0';
 			for (k; k < strlen(c); ++k)
 			{
 				substringRight[k - (i + 3)] = c[k];
@@ -416,6 +447,18 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		}
 		i++;
 	}
+
+	Node* node = new Node;
+	i = 0;
+	if (c[0] == '~' || isdigit(c[0])) {
+		double ins = 0;
+		isFloat(c, ins);
+		node->data = ins;
+	}
+	for (i; i < strlen(c); ++i) node->value[i] = c[i];
+	node->value[strlen(c)] = '\0';
+
+	return node;
 }
 
 char* getString()
@@ -423,6 +466,21 @@ char* getString()
 	char* string = new char[100];
 	cin.getline(string, 100);
 	return string;
+}
+
+void variableToFloat(char*& v, double& ins, Tree* tree)
+{
+	system("cls");
+	cin.clear();
+	cout << "Which variable vould you like to insert float into?\n";
+	cin.getline(v, 10);
+	cout << "Ok, now, with what float?\n";
+	cin >> ins;
+	tree->variable_redefiner(tree->root, v, ins);
+	tree->printPostorder(tree->root); cout << endl << endl;
+	int level = 0;
+	tree->print_tree(tree->root, level);
+	system("pause");
 }
 
 int main()
@@ -434,8 +492,16 @@ int main()
 	char* expr = getString();
 	tree->root = ExpressionTree(expr, stringstack);
 	int level = 0;
-	tree->printPostorder(tree->root); cout << endl << endl;
+	tree->printPostorder(tree->root); cout << endl;
+	cout << "Tree itself: \n\n";
 	tree->print_tree(tree->root, level);
-	delete[] tree, stringstack;
+	system("pause");
+	tree->printPostorder(tree->root); cout << endl << endl;
+	char* v = new char[10];
+	double ins = 0;
+
+	variableToFloat(v, ins, tree);
+
+	delete[] tree, stringstack, expr, v;
 	return 0;
 }
