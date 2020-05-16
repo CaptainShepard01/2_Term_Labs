@@ -103,10 +103,22 @@ struct Tree
 		// now deal with the node 
 		cout << node->value << " ";
 	}
+	void PostorderString(Node* node, int& i, char* str)
+	{
+		if (node == NULL)return;
+
+		PostorderString(node->left, i, str);
+		PostorderString(node->right, i, str);
+		for (int j = 0; j < strlen(node->value); ++j) { str[i] = node->value[j]; i++; }
+		str[i] = ' ';
+		str[i + 1] = '\0';
+		i++;
+
+	}
 	void variable_redefiner(Node* p, char* v, float ins)
 	{
 		if (p) {
-			variable_redefiner(p->left,v, ins);
+			variable_redefiner(p->left, v, ins);
 			if (strcmp(p->value, v) == 0) {
 				int ret = snprintf(p->value, sizeof p->value, "%f", ins);
 				if (ret < 0) {
@@ -115,49 +127,10 @@ struct Tree
 					return;
 				}
 				if (ret >= sizeof p->value) {
-					 //Result was truncated - resize the buffer and retry.
+					//Result was truncated - resize the buffer and retry.
 				}
 			}
-			variable_redefiner(p->right,v, ins);
-		}
-	}
-};
-
-struct Expression
-{
-	enum OperatorType { PLUS, MINUS, MULTIPL, DIVISION, UNARY_MINUS, SIN, COS, NUMBER } type = NUMBER;
-	int value = 0;
-
-	void print()
-	{
-		switch (type)
-		{
-		case Expression::PLUS:
-			std::cout << "+";
-			break;
-		case Expression::MINUS:
-			std::cout << "-";
-			break;
-		case Expression::MULTIPL:
-			std::cout << "*";
-			break;
-		case Expression::DIVISION:
-			std::cout << "/";
-			break;
-		case Expression::UNARY_MINUS:
-			std::cout << "~";
-			break;
-		case Expression::SIN:
-			std::cout << "sin";
-			break;
-		case Expression::COS:
-			std::cout << "cos";
-			break;
-		case Expression::NUMBER:
-			std::cout << value;
-			break;
-		default:
-			break;
+			variable_redefiner(p->right, v, ins);
 		}
 	}
 };
@@ -248,9 +221,7 @@ struct List {
 	}
 };
 
-
-
-bool isFloat(char* v, double&ins)
+bool isFloat(char* v, double& ins)
 {
 	int i = 0;
 	char* c = new char[strlen(v)];
@@ -259,7 +230,7 @@ bool isFloat(char* v, double&ins)
 	bool isMinus = 0;
 	if (v[0] == '~') {
 		isMinus = 1;
-		for (i+1; i < strlen(v); ++i)c[i-1] = v[i];
+		for (i + 1; i < strlen(v); ++i)c[i - 1] = v[i];
 		c[strlen(v) - 1] = '\0';
 	}
 	i = 0;
@@ -323,7 +294,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
 			else { node->value[0] = 43; node->value[1] = '\0'; }
 			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) c[i] = '~';
-			
+
 			else {
 				char* temp = new char[20];
 				for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
@@ -468,7 +439,7 @@ char* getString()
 	return string;
 }
 
-void variableToFloat(char*& v, double& ins, Tree* tree)
+void variableToDouble(char*& v, double& ins, Tree* tree)
 {
 	system("cls");
 	cin.clear();
@@ -481,6 +452,21 @@ void variableToFloat(char*& v, double& ins, Tree* tree)
 	int level = 0;
 	tree->print_tree(tree->root, level);
 	system("pause");
+}
+
+double Result(Tree* tree)
+{
+	Stack* exprstk = new Stack;
+	double res = 0;
+	int i = 0;
+	char* string = new char[100]; tree->PostorderString(tree->root, i, string);
+	//cout << strlen(string) << endl;
+	//cout << string;
+	int doublecounter = 0;
+	exprstk->push();   //TODO
+	while()
+	delete exprstk, string;
+	return res;
 }
 
 int main()
@@ -499,8 +485,8 @@ int main()
 	tree->printPostorder(tree->root); cout << endl << endl;
 	char* v = new char[10];
 	double ins = 0;
-
-	variableToFloat(v, ins, tree);
+	Result(tree);
+	//variableToDouble(v, ins, tree);
 
 	delete[] tree, stringstack, expr, v;
 	return 0;
