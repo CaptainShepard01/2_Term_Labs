@@ -1,6 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <cmath>
+#include <math.h>
 #include <algorithm>
 #include <iomanip>
 #include <stack>
@@ -106,7 +106,7 @@ struct Tree
 	void variable_redefiner(Node* p, char* v, float ins)
 	{
 		if (p) {
-			variable_redefiner(p->left,v, ins);
+			variable_redefiner(p->left, v, ins);
 			if (strcmp(p->value, v) == 0) {
 				int ret = snprintf(p->value, sizeof p->value, "%f", ins);
 				if (ret < 0) {
@@ -115,10 +115,10 @@ struct Tree
 					return;
 				}
 				if (ret >= sizeof p->value) {
-					 //Result was truncated - resize the buffer and retry.
+					//Result was truncated - resize the buffer and retry.
 				}
 			}
-			variable_redefiner(p->right,v, ins);
+			variable_redefiner(p->right, v, ins);
 		}
 	}
 };
@@ -250,7 +250,7 @@ struct List {
 
 
 
-bool isFloat(char* v, double&ins)
+bool isFloat(char* v, double& ins)
 {
 	int i = 0;
 	char* c = new char[strlen(v)];
@@ -259,7 +259,7 @@ bool isFloat(char* v, double&ins)
 	bool isMinus = 0;
 	if (v[0] == '~') {
 		isMinus = 1;
-		for (i+1; i < strlen(v); ++i)c[i-1] = v[i];
+		for (i + 1; i < strlen(v); ++i)c[i - 1] = v[i];
 		c[strlen(v) - 1] = '\0';
 	}
 	i = 0;
@@ -323,7 +323,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
 			else { node->value[0] = 43; node->value[1] = '\0'; }
 			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) c[i] = '~';
-			
+
 			else {
 				char* temp = new char[20];
 				for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
@@ -483,6 +483,42 @@ void variableToFloat(char*& v, double& ins, Tree* tree)
 	system("pause");
 }
 
+double eval(Node* root)
+{
+	// empty tree  
+	if (!root)
+		return 0;
+
+	// leaf node i.e, an integer  
+	if (!root->left && !root->right)
+		return (root->data);
+
+	// Evaluate left subtree  
+	double l_val = eval(root->left);
+
+	// Evaluate right subtree  
+	double r_val = eval(root->right);
+
+	// Check which operator to apply  
+	if (root->value[0] == '+')
+		return l_val + r_val;
+
+	if (root->value[0] == '-')
+		return l_val - r_val;
+
+	if (root->value[0] == '*')
+		return l_val * r_val;
+
+	if (root->value[0] == '/')
+		return l_val / r_val;
+
+	if (root->value[0] == 's')
+		return sin(r_val);
+
+	if (root->value[0] == 'c')
+		return cos(r_val);
+}
+
 int main()
 {
 	//cout << cursubstringLeft << cursubstringRight << substringLeft << substringRight;
@@ -492,15 +528,16 @@ int main()
 	char* expr = getString();
 	tree->root = ExpressionTree(expr, stringstack);
 	int level = 0;
-	tree->printPostorder(tree->root); cout << endl;
+	tree->printPostorder(tree->root); cout << endl << endl;
 	cout << "Tree itself: \n\n";
 	tree->print_tree(tree->root, level);
-	system("pause");
-	tree->printPostorder(tree->root); cout << endl << endl;
+	//system("pause");
+	//tree->printPostorder(tree->root); cout << endl << endl;
 	char* v = new char[10];
 	double ins = 0;
-
-	variableToFloat(v, ins, tree);
+	cout << "Result = " << eval(tree->root) << endl;
+	system("pause");
+	//variableToFloat(v, ins, tree);
 
 	delete[] tree, stringstack, expr, v;
 	return 0;
