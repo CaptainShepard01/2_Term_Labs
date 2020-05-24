@@ -250,7 +250,7 @@ struct List {
 
 
 
-bool isFloat(char* v, double& ins)
+/*bool isFloat(char* v, double* ins)
 {
 	int i = 0;
 	char* c = new char[strlen(v)];
@@ -266,11 +266,13 @@ bool isFloat(char* v, double& ins)
 	for (i; i < strlen(v); ++i) {
 		if ((c[i] < '0' || c[i]>'9') && c[i] != '.')return false;
 	}
-	ins = strtod(c, NULL);
+	*ins = atof(c);
+	cout << ins << endl;
+	system("pause");
 	delete[] c;
-	if (isMinus)ins = ins * (-1);
+	if (isMinus)(*ins) = (*ins) * (-1);
 	return true;
-}
+}*/
 
 Node* ExpressionTree(char* c, Stack*& stack)
 {
@@ -302,7 +304,9 @@ Node* ExpressionTree(char* c, Stack*& stack)
 	i = 0;
 	cnt = 0;
 	if (strlen(c) == 1) {
-		Node* node = new Node; node->value[0] = c[0]; node->value[1] = '\0'; return node;
+		Node* node = new Node; node->value[0] = c[0]; node->value[1] = '\0';
+		if (isdigit(c[0]))node->data = atof(c);
+		return node;
 	}
 
 	while (c[i] != '\0') {
@@ -450,13 +454,17 @@ Node* ExpressionTree(char* c, Stack*& stack)
 
 	Node* node = new Node;
 	i = 0;
-	if (c[0] == '~' || isdigit(c[0])) {
-		double ins = 0;
-		isFloat(c, ins);
-		node->data = ins;
-	}
 	for (i; i < strlen(c); ++i) node->value[i] = c[i];
 	node->value[strlen(c)] = '\0';
+	if (c[0] == '~' || isdigit(c[0])) {
+		double ins = 0;
+		if (c[0] == '~') {
+			c++;
+			ins = (-1) * atof(c);
+		}
+		else ins = atof(c);
+		node->data = ins;
+	}
 
 	return node;
 }
