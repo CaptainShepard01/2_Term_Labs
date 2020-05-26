@@ -11,198 +11,519 @@
 //#include "Header.h"
 using namespace std;
 
-struct Node
+struct Elem
 {
-	char* value = new char[100];
-	double data = 0;
-	Node* right = nullptr; Node* left = nullptr;
+	Element data;
+	Elem* next, * prev;
 };
 
-struct List {
-	Node* head = NULL;
-	Node* tail = NULL;
+struct List
+{
+	Elem* Head, * Tail;
 
-	void addLast(char* value) {
-		Node* node = new Node;
-		for (int i = 0; i < strlen(value); ++i)
+	int Count; //number of List nodes
+
+	inline List()
+	{
+		Head = NULL; Tail = NULL; Count = 0;
+	}
+
+	inline List(const List& L)
+	{
+		Head = Tail = NULL;
+		Count = 0;
+
+		Elem* temp = new Elem;
+		temp = L.Head;
+
+		while (temp != 0)
 		{
-			node->value[i] = value[i];
-		}
-		node->value[strlen(value)] = '\0';
-		node->right = NULL;
-		if (head == NULL) {
-			tail = node; head = node;
-		}
-		else {
-			node->left = tail;
-			tail->right = node;
-			tail = node;
+			AddLast(temp->data);
+			temp = temp->next;
 		}
 	}
 
-	Node* find(char* key)
+	inline ~List()
 	{
-		Node* cur = head;
-		while (cur)
-		{
-			if (strcmp(cur->value, key) == 0)break;
-			cur = cur->right;
-		}
-		if (cur != NULL) { system("cls"); cout << "Here you are: " << cur->value << '\n'; }
-		else cout << "There is no such element in list!" << endl;
-		system("pause");
-		system("cls");
-		return cur;
+		DelAll();
 	}
 
-	bool remove(char* key)
+	inline void AddFirst(Element n)
 	{
-		if (Node* pkey = find(key)) {
-			if (pkey == head) {
-				head = (head)->right;
-				(head)->left = NULL;
-			}
-			else if (pkey == tail) {
-				tail = (tail)->left;
-				(tail)->right = NULL;
-			}
-			else {
-				(pkey->left)->right = pkey->right;
-				(pkey->right)->left = pkey->left;
-			}
-			delete pkey;
+		Elem* temp = new Elem;
+
+		temp->prev = 0;
+
+		temp->data = n;
+
+		temp->next = Head;
+
+		if (Head != 0)
+			Head->prev = temp;
+
+		if (Count == 0)
+			Head = Tail = temp;
+		else
+			Head = temp;
+
+		Count++;
+	}
+	inline void AddLast(Element n)
+	{
+		Elem* temp = new Elem;
+
+		temp->next = 0;
+
+		temp->data = n;
+
+		temp->prev = Tail;
+
+		if (Tail != 0)
+			Tail->next = temp;
+
+		if (Count == 0)
+			Head = Tail = temp;
+		else
+			Tail = temp;
+
+		Count++;
+	}
+
+	bool IsCorrectPosition(int pos, int Count)
+	{
+		if (pos<1 || pos>Count + 1)return 0;
+		return 1;
+	}
+
+	inline void Insert(int pos, Element data)
+	{
+		if (pos == 0)
+		{
+			cout << "Input position: ";
+			cin >> pos;
+		}
+
+		if (!IsCorrectPosition(pos, Count))
+		{
+			cout << "Incorrect position !!!\n";
+			return;
+		}
+
+		if (pos == Count + 1)
+		{
+			AddLast(data);
+			return;
+		}
+		else if (pos == 1)
+		{
+			AddFirst(data);
+			return;
+		}
+
+		int i = 1;
+
+		Elem* Ins = Head;
+		while (i < pos)
+		{
+			Ins = Ins->next;
+			i++;
+		}
+
+		Elem* PrevIns = Ins->prev;
+
+		Elem* temp = new Elem;
+
+		temp->data = data;
+
+		if (PrevIns != 0 && Count != 1)
+			PrevIns->next = temp;
+		temp->next = Ins;
+		temp->prev = PrevIns;
+		Ins->prev = temp;
+		Count++;
+	}
+	inline void Del(int pos)
+	{
+		if (pos == 0)
+		{
+			cout << "Input position: ";
+			cin >> pos;
+		}
+
+		if (!IsCorrectPosition(pos, Count))
+		{
+			cout << "Incorrect position !!!\n";
+			return;
+		}
+
+		int i = 1;
+		Elem* Del = Head;
+		while (i < pos)
+		{
+			Del = Del->next;
+			i++;
+		}
+
+		Elem* PrevDel = Del->prev;
+
+		Elem* AfterDel = Del->next;
+
+		if (PrevDel != 0 && Count != 1)	PrevDel->next = AfterDel;
+
+		if (AfterDel != 0 && Count != 1) AfterDel->prev = PrevDel;
+
+		if (pos == 1)	Head = AfterDel;
+		if (pos == Count)	Tail = PrevDel;
+
+		delete Del;
+		Count--;
+	}
+
+	inline void DelAll()
+	{
+		while (Count != 0)
+			Del(1);
+	}
+	inline int GetCount()
+	{
+		return Count;
+	}
+	inline Elem* GetElem(int pos)
+	{
+		Elem* temp = Head;
+
+		if (!IsCorrectPosition(pos, Count))
+		{
+			cout << "Incorrect position !!!\n";
+			return 0;
+		}
+		int i = 1;
+
+		while (i < pos && temp != 0)
+		{
+			temp = temp->next;
+			i++;
+		}
+		if (temp == 0)
+			return 0;
+		else
+			return temp;
+	}
+	inline List& operator = (const List& L)
+	{
+		if (this == &L)
+			return *this;
+
+		this->~List();
+		Elem* temp = L.Head;
+
+		while (temp != 0)
+		{
+			AddLast(temp->data);
+			temp = temp->next;
+		}
+		return *this;
+	}
+};
+
+
+struct Element
+{
+	char eng[64] = { "\0" }, ukr[64] = { "\0" };
+	int request = 0;  //number of requests to this translation
+
+	Element* left, * right, * parent;
+
+	Element()
+	{
+		request = -1;
+		left = NULL;
+		right = NULL;
+		parent = NULL;
+	}
+
+	Element(char eng[64], char ukr[64], int req)
+	{
+		strcpy(this->eng, eng);
+		strcpy(this->ukr, ukr);
+		request = req;
+		left = NULL;
+		right = NULL;
+		parent = NULL;
+	}
+
+	~Element()
+	{
+
+	}
+
+	void operator = (const Element& el)
+	{
+		for (int i = 0; i < 64 && (el.eng[i] != '\0' || el.ukr[i] != '\0'); i++)
+		{
+			eng[i] = el.eng[i];
+			ukr[i] = el.ukr[i];
+		}
+		request = el.request;
+		left = el.left;
+		right = el.right;
+		parent = el.parent;
+	}
+
+	bool operator != (const Element& el)
+	{
+		for (int i = 0; i < 64 && (el.eng[i] != '\0' || el.ukr[i] != '\0'); i++)
+		{
+			if (eng[i] != el.eng[i] && ukr[i] != el.ukr[i])
+				return true;
+		}
+		if (request = el.request)
 			return true;
-		}
+
 		return false;
 	}
 
-	bool RemoveLast()
+	bool operator ! ()
 	{
-		if (head == NULL) {
-			cout << "There are no elements!" << endl << endl;
-			return false;
-		}
-		else {
-			Node* cur = tail;
-			tail = (tail)->left;
-			(tail)->right = NULL;
-			delete cur;
-			//cout << "Successful!" << endl;
-			return true;
-		}
-
-	}
-	void Print()
-	{
-		Node* cur = new Node;
-		cur = head;
-		while (cur) {
-			cout << "Element: " << cur->value << endl;
-			cur = cur->right;
-		}
-		return;
-	}
-};
-
-struct Stack {
-	Node* head = nullptr;
-	Node* tail = nullptr;
-
-	Node* peek()
-	{
-		return tail;
-	};
-
-	void push(char* value)
-	{
-		Node* node = new Node;
-		for (int i = 0; i < strlen(value); ++i)
+		for (int i = 0; i < 64; i++)
 		{
-			node->value[i] = value[i];
+			if (eng[i] != '\0' && ukr[i] != '\0')
+				return true;
 		}
-		node->value[strlen(value)] = '\0';
-		if (tail == nullptr) {
-			tail = node; head = node;
-		}
-		else {
-			node->left = tail;
-			tail->right = node;
-			tail = node;
-		}
-	};
 
-	Node* pop()
-	{
-		if (tail != nullptr) {
-			Node* cur = tail;
-			if (tail != head) {
-				tail = (tail)->left;
-				(tail)->right = nullptr;
-			}
-			else {
-				tail = nullptr; head = nullptr;
-			}
-			return cur;
-		}
-	};
+		return false;
+	}
 };
+
+bool CompareStrByAlph(char str1[64], char str2[64])
+{
+	for (int i = 0; i < 64; i++)
+	{
+		if (strlen(str1) == i || strlen(str2) == i)
+			if (strlen(str1) < strlen(str2))
+				return true;
+			else
+				return false;
+
+		if (str1[i] < str2[i])
+			return true;
+		else if (str1[i] != str2[i])
+			return false;
+	}
+
+	return false;
+}
+
+bool CompareStr(char str1[64], char str2[64])
+{
+	for (int i = 0; str1[i] > 0 && str2[i] > 0; i++)
+	{
+		if (str1[i] != str2[i])
+			return false;
+
+		if (str1[i + 1] < 0 && str2[i + 1] > 0 || str2[i + 1] < 0 && str1[i + 1] > 0)
+			return false;
+	}
+
+	return true;
+}
 
 struct Tree
 {
-	Node* root = nullptr;
+	Element* root;
+	int count = 0;
+	Tree()
+	{
+		root = new Element();
+	}
 
-	Node* first(char* value) {
-		root = new Node;
-		for (int i = 0; i < strlen(value); ++i)
+	~Tree()
+	{
+		Del(root);
+	}
+
+	void Print(Element* Node)
+	{
+		if (Node != 0)
 		{
-			root->value[i] = value[i];
+			Print(Node->left);
+			cout << "Eng: " << Node->eng << endl << "Ukr: " << Node->ukr << endl << "Requests: " << Node->request << endl << endl;
+			Print(Node->right);
 		}
-		root->value[strlen(value)] = '\0';
-		root->left = nullptr;
-		root->right = nullptr;
+	}
+
+	void GetElementByOrder(Element* Node, List& arrNodes)
+	{
+		if (Node != 0)
+		{
+			Element tmp = *Node;
+			tmp.left = NULL;
+			tmp.right = NULL;
+			tmp.parent = NULL;
+			GetElementByOrder(Node->left, arrNodes);
+			int pos = 1;
+			bool flag = true;
+			if (arrNodes.GetCount() != 0)
+			{
+				for (int i = 0; i < arrNodes.GetCount(); i++)
+				{
+					if (Node->request < arrNodes.GetElem(i + 1)->data.request && Node->eng != arrNodes.GetElem(i + 1)->data.eng)
+						pos++;
+					else
+					{
+						flag = false;
+						arrNodes.Insert(pos, tmp);
+						break;
+					}
+				}
+				if (flag)
+					arrNodes.AddLast(tmp);
+			}
+			else
+				arrNodes.AddFirst(tmp);
+			GetElementByOrder(Node->right, arrNodes);
+		}
+	}
+
+	Element* Search(Element* Node, char* key)
+	{
+		while (Node != 0)
+		{
+			if (CompareStr(key, Node->eng))
+				break;
+			if (CompareStrByAlph(key, Node->eng))
+				Node = Node->left;
+			else
+				Node = Node->right;
+		}
+
+		Node->request++;
+		cout << "Eng: " << endl
+			<< Node->eng << endl << "Ukr: " << endl
+			<< Node->ukr << endl << "Requests: " << endl
+			<< Node->request << endl;
+
+		return Node;
+	}
+
+	Element* Min(Element* Node)
+	{
+		if (Node != 0)
+			while (Node->left != 0)
+				Node = Node->left;
+		return Node;
+	}
+
+	Element* Max(Element* Node)
+	{
+		if (Node != 0)
+			while (Node->right != 0)
+				Node = Node->right;
+		return Node;
+	}
+
+	Element* Next(Element* Node)
+	{
+		Element* temp = 0;
+		if (Node != 0)
+		{
+			if (Node->right != 0)
+				return Min(Node->right);
+			temp = Node->parent;
+			while (temp != 0 && Node == temp->right)
+			{
+				Node = temp;
+				temp = temp->parent;
+			}
+		}
+		return temp;
+	}
+
+	Element* Previous(Element* Node)
+	{
+		Element* temp = 0;
+		if (Node != 0)
+		{
+			if (Node->left != 0)
+				return Max(Node->left);
+			temp = Node->parent;
+			while (temp != 0 && Node == temp->left)
+			{
+				Node = temp;
+				temp = temp->parent;
+			}
+		}
+		return temp;
+	}
+
+	Element* GetRoot()
+	{
 		return root;
 	}
 
-	void print_tree(Node* p, int level)
+	void Insert(Element Elementent)
 	{
-		if (p) {
-			print_tree(p->left, level + 1);
-			for (int i = 0; i < level; ++i)cout << "    ";
-			cout << p->value << endl;
-			print_tree(p->right, level + 1);
-		}
-	}
-	void printPostorder(Node* node)
-	{
-		if (node == NULL)
-			return;
+		count++;
+		Element* temp = NULL;
+		Element* Node = root;
 
-		// first recur on left subtree 
-		printPostorder(node->left);
-
-		// then recur on right subtree 
-		printPostorder(node->right);
-
-		// now deal with the node 
-		cout << node->value << " ";
-	}
-	void variable_redefiner(Node* p, char* v, float ins)
-	{
-		if (p) {
-			variable_redefiner(p->left, v, ins);
-			if (strcmp(p->value, v) == 0) {
-				int ret = snprintf(p->value, sizeof p->value, "%f", ins);
-				if (ret < 0) {
-					cout << "Something went wrong!\n";
-					system("pause");
-					return;
-				}
-				if (ret >= sizeof p->value) {
-					//Result was truncated - resize the buffer and retry.
-				}
+		if (root->request != -1)
+			while (Node != 0)
+			{
+				temp = Node;
+				if (CompareStrByAlph(Elementent.eng, Node->eng) > 0)
+					Node = Node->left;
+				else
+					Node = Node->right;
 			}
-			variable_redefiner(p->right, v, ins);
+
+		Elementent.parent = temp;
+
+		if (temp == 0)
+			*root = Elementent;
+		else if (CompareStrByAlph(Elementent.eng, temp->eng) > 0)
+		{
+			temp->left = new Element();
+			*temp->left = Elementent;
 		}
+		else
+		{
+			temp->right = new Element();
+			*temp->right = Elementent;
+		}
+	}
+
+	void Del(Element* Elementent)
+	{
+		if (Elementent != 0)
+		{
+			count--;
+			Element* Node, * temp;
+
+			Elementent->left == 0 || Elementent->right == 0 ? temp = Elementent : temp = Next(Elementent);
+
+			temp->left != 0 ? Node = temp->left : Node = temp->right;
+
+			if (Node != 0)
+				Node->parent = temp->parent;
+
+			if (temp->parent == 0)
+				root = Node;
+			else if (temp == temp->parent->left)
+				temp->parent->left = Node;
+			else
+				temp->parent->right = Node;
+
+			if (temp != Elementent)
+			{
+				strcpy(Elementent->eng, temp->eng);
+				strcpy(Elementent->ukr, temp->ukr);
+				Elementent->request = temp->request;
+			}
+			delete temp;
+		}
+		else while (root != 0)
+			Del(root);
 	}
 };
 
@@ -210,5 +531,6 @@ struct Tree
 
 int main()
 {
-    std::cout << "Hello World!\n";
+
+	return 0;
 }

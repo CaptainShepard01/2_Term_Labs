@@ -103,7 +103,7 @@ struct Tree
 		// now deal with the node 
 		cout << node->value << " ";
 	}
-	void variable_redefiner(Node* p, char* v, float ins)
+	bool variable_redefiner(Node* p, char* v, float ins)
 	{
 		if (p) {
 			variable_redefiner(p->left, v, ins);
@@ -112,18 +112,21 @@ struct Tree
 				if (ret < 0) {
 					cout << "Something went wrong!\n";
 					system("pause");
-					return;
+					return 0;
 				}
 				if (ret >= sizeof p->value) {
 					//Result was truncated - resize the buffer and retry.
 				}
+				//if (*isOk)cout << "Done!\n";
 			}
 			variable_redefiner(p->right, v, ins);
+			return 1;
 		}
+		return 0;
 	}
 };
 
-struct Expression
+/*struct Expression
 {
 	enum OperatorType { PLUS, MINUS, MULTIPL, DIVISION, UNARY_MINUS, SIN, COS, NUMBER } type = NUMBER;
 	int value = 0;
@@ -160,7 +163,7 @@ struct Expression
 			break;
 		}
 	}
-};
+};*/
 
 struct List {
 	Node* head = NULL;
@@ -248,32 +251,6 @@ struct List {
 	}
 };
 
-
-
-/*bool isFloat(char* v, double* ins)
-{
-	int i = 0;
-	char* c = new char[strlen(v)];
-	for (i; i < strlen(v); ++i)c[i] = v[i];
-	i = 0;
-	bool isMinus = 0;
-	if (v[0] == '~') {
-		isMinus = 1;
-		for (i + 1; i < strlen(v); ++i)c[i - 1] = v[i];
-		c[strlen(v) - 1] = '\0';
-	}
-	i = 0;
-	for (i; i < strlen(v); ++i) {
-		if ((c[i] < '0' || c[i]>'9') && c[i] != '.')return false;
-	}
-	*ins = atof(c);
-	cout << ins << endl;
-	system("pause");
-	delete[] c;
-	if (isMinus)(*ins) = (*ins) * (-1);
-	return true;
-}*/
-
 Node* ExpressionTree(char* c, Stack*& stack)
 {
 	int cnt = 0;
@@ -319,16 +296,35 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			if (c[i] == '(')cnt++;
 			if (c[i] == ')')cnt--;
 		}
-		if (c[i] == '+' || c[i] == '-') {
-			Node* node = new Node;
-			bool isMinus = 0;
-			if (c[i] == '-')isMinus = 1;
+		if (i == 0) {
+			if (c[i] == '-') {
+				Node* node = new Node;
+				node->value[0] = '~'; node->value[1] = '\0';
+				for (int j = i + 1; j < strlen(c); ++j) substringRight[j - (i + 1)] = c[j];
+				substringRight[strlen(c) - (i + 1)] = '\0';
 
-			if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
-			else { node->value[0] = 43; node->value[1] = '\0'; }
-			if ((isMinus && i == 0) || (isMinus && !isdigit(c[i - 1]) && !isalpha(c[i - 1]))) c[i] = '~';
+				node->right = ExpressionTree(substringRight, stack);
+				return node;
+			}
+		}
+		if (i != 0) {
+			if (c[i] == '-' && c[i - 1] == '(') {
+				Node* node = new Node;
+				node->value[0] = '~'; node->value[1] = '\0';
+				for (int j = i + 1; j < strlen(c); ++j) substringRight[j - (i + 1)] = c[j];
+				substringRight[strlen(c) - (i + 1)] = '\0';
 
-			else {
+				node->right = ExpressionTree(substringRight, stack);
+				return node;
+			}
+			if ((c[i] == '+' || c[i] == '-') && c[i - 1] != '(') {
+				Node* node = new Node;
+				bool isMinus = 0;
+				if (c[i] == '-')isMinus = 1;
+
+				if (isMinus) { node->value[0] = 45; node->value[1] = '\0'; }
+				else { node->value[0] = 43; node->value[1] = '\0'; }
+
 				char* temp = new char[20];
 				for (int k = 0; k < strlen(c); ++k)temp[k] = c[k]; temp[strlen(c)] = '\0';
 				int j = 0;
@@ -337,7 +333,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 				}
 				substringLeft[j] = '\0';
 
-				for (j = i + 1; j < strlen(temp); ++j) substringRight[j - (i + 1)] = c[j];
+				for (j = i + 1; j < strlen(temp); ++j) substringRight[j - (i + 1)] = temp[j];
 				substringRight[strlen(temp) - (i + 1)] = '\0';
 
 				stack->push(substringRight);
@@ -349,7 +345,9 @@ Node* ExpressionTree(char* c, Stack*& stack)
 
 				node->right = ExpressionTree(substringRight, stack);
 				return node;
+
 			}
+
 		}
 		i++;
 	}
@@ -381,7 +379,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			}
 			substringLeft[j] = '\0';
 
-			for (j = i + 1; j < strlen(temp); ++j) substringRight[j - (i + 1)] = c[j];
+			for (j = i + 1; j < strlen(temp); ++j) substringRight[j - (i + 1)] = temp[j];
 			substringRight[strlen(temp) - (i + 1)] = '\0';
 
 			stack->push(substringRight);
@@ -452,6 +450,8 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		i++;
 	}
 
+
+
 	Node* node = new Node;
 	i = 0;
 	for (i; i < strlen(c); ++i) node->value[i] = c[i];
@@ -476,19 +476,33 @@ char* getString()
 	return string;
 }
 
-void variableToFloat(char*& v, double& ins, Tree* tree)
+bool variableToFloat(char*& v, double& ins, Tree* tree)
 {
 	system("cls");
+	tree->printPostorder(tree->root); cout << endl << endl;
 	cin.clear();
-	cout << "Which variable vould you like to insert float into?\n";
+	cout << "Which variable would you like to insert float into?\n";
 	cin.getline(v, 10);
 	cout << "Ok, now, with what float?\n";
 	cin >> ins;
-	tree->variable_redefiner(tree->root, v, ins);
-	tree->printPostorder(tree->root); cout << endl << endl;
-	int level = 0;
-	tree->print_tree(tree->root, level);
-	system("pause");
+	if (tree->variable_redefiner(tree->root, v, ins)) {
+		system("cls");
+		cout << "Done!\n";
+		tree->printPostorder(tree->root); cout << endl << endl;
+		int level = 0;
+		tree->print_tree(tree->root, level);
+		system("pause");
+		system("cls");
+		return 1;
+	}
+	else {
+		cout << "There is no such variable!\n";
+		system("pause");
+		system("cls");
+		cin.clear();
+		return 0;
+	}
+	return 0;
 }
 
 double eval(Node* root)
@@ -497,7 +511,10 @@ double eval(Node* root)
 	if (!root)
 		return 0;
 
-	// leaf node i.e, an integer  
+	// leaf node i.e, a double  
+	/*if (isalpha(root->value[0]) && root->value[1] == '\0') {
+
+	}*/
 	if (!root->left && !root->right)
 		return (root->data);
 
@@ -513,6 +530,9 @@ double eval(Node* root)
 
 	if (root->value[0] == '-')
 		return l_val - r_val;
+
+	if (root->value[0] == '~')
+		return -(r_val);
 
 	if (root->value[0] == '*')
 		return l_val * r_val;
@@ -544,9 +564,14 @@ int main()
 	char* v = new char[10];
 	double ins = 0;
 	cout << "Result = " << eval(tree->root) << endl;
-	system("pause");
-	//variableToFloat(v, ins, tree);
-
+	/*system("pause");
+	do {
+		while (cin.get() != '\n');
+		if (variableToFloat(v, ins, tree)) {
+			cout << "Done!\n";
+		}
+	}while (!variableToFloat(v, ins, tree));
+	cout << "Result = " << eval(tree->root) << endl;*/
 	delete[] tree, stringstack, expr, v;
 	return 0;
 }
