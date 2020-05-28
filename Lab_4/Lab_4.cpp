@@ -16,6 +16,7 @@ char* substringRight = new char[100];
 
 struct Node
 {
+	bool isVariable = 1;
 	char* value = new char[10];
 	double data = 0;
 	Node* right = nullptr; Node* left = nullptr;
@@ -101,69 +102,24 @@ struct Tree
 		printPostorder(node->right);
 
 		// now deal with the node 
-		cout << node->value << " ";
+		if (node->isVariable == 1)	cout << node->value << " ";
+		else cout << node->data << " ";
 	}
-	bool variable_redefiner(Node* p, char* v, float ins)
+	bool variable_redefiner(Node* p, char v, float ins)
 	{
 		if (p) {
 			variable_redefiner(p->left, v, ins);
-			if (strcmp(p->value, v) == 0) {
-				int ret = snprintf(p->value, sizeof p->value, "%f", ins);
-				if (ret < 0) {
-					cout << "Something went wrong!\n";
-					system("pause");
-					return 0;
-				}
-				if (ret >= sizeof p->value) {
-					//Result was truncated - resize the buffer and retry.
-				}
-				//if (*isOk)cout << "Done!\n";
+			if (isalpha(p->value[0]) && v == p->value[0] && p->isVariable==1 && strlen(p->value) == 1) {
+				p->data = ins;
+				p->isVariable = 0;
 			}
 			variable_redefiner(p->right, v, ins);
+			
 			return 1;
 		}
 		return 0;
 	}
 };
-
-/*struct Expression
-{
-	enum OperatorType { PLUS, MINUS, MULTIPL, DIVISION, UNARY_MINUS, SIN, COS, NUMBER } type = NUMBER;
-	int value = 0;
-
-	void print()
-	{
-		switch (type)
-		{
-		case Expression::PLUS:
-			std::cout << "+";
-			break;
-		case Expression::MINUS:
-			std::cout << "-";
-			break;
-		case Expression::MULTIPL:
-			std::cout << "*";
-			break;
-		case Expression::DIVISION:
-			std::cout << "/";
-			break;
-		case Expression::UNARY_MINUS:
-			std::cout << "~";
-			break;
-		case Expression::SIN:
-			std::cout << "sin";
-			break;
-		case Expression::COS:
-			std::cout << "cos";
-			break;
-		case Expression::NUMBER:
-			std::cout << value;
-			break;
-		default:
-			break;
-		}
-	}
-};*/
 
 struct List {
 	Node* head = NULL;
@@ -464,6 +420,7 @@ Node* ExpressionTree(char* c, Stack*& stack)
 		}
 		else ins = atof(c);
 		node->data = ins;
+		node->isVariable = 0;
 	}
 
 	return node;
@@ -476,32 +433,48 @@ char* getString()
 	return string;
 }
 
-bool variableToFloat(char*& v, double& ins, Tree* tree)
+bool isSin(char f, char s, char t)
+{
+	if (f == 's' && s == 'i' && t == 'n')return 1;
+	return 0;
+}
+
+bool isCos(char f, char s, char t)
+{
+	if (f == 'c' && s == 'o' && t == 's')return 1;
+	return 0;
+}
+
+bool variableToFloat(char* v, double& ins, Tree* &tree)
 {
 	system("cls");
-	tree->printPostorder(tree->root); cout << endl << endl;
-	cin.clear();
-	cout << "Which variable would you like to insert float into?\n";
-	cin.getline(v, 10);
-	cout << "Ok, now, with what float?\n";
-	cin >> ins;
-	if (tree->variable_redefiner(tree->root, v, ins)) {
-		system("cls");
-		cout << "Done!\n";
-		tree->printPostorder(tree->root); cout << endl << endl;
-		int level = 0;
-		tree->print_tree(tree->root, level);
-		system("pause");
-		system("cls");
-		return 1;
-	}
-	else {
-		cout << "There is no such variable!\n";
-		system("pause");
-		system("cls");
+	int i = 0, k = 0;
+	char tmp = 'o';
+	while (v[i] != '\0') {	
 		cin.clear();
-		return 0;
+		if (isalpha(v[i]) && !isSin(v[i], v[i + 1], v[i + 2]) && !isCos(v[i], v[i + 1], v[i + 2])){		
+			tree->printPostorder(tree->root); cout << endl << endl;
+			cout << "Variable: " << v[i] << endl;
+			cout << "Enter value: ";
+			cin.clear();
+			cin >> ins;
+			tree->variable_redefiner(tree->root, v[i], ins);
+			tmp = v[i];
+			k = strlen(v);
+			for (int j = 0; j < k; ++j) {
+				if (v[j] == tmp) {
+					for (int l = 0; l < k; ++l)v[l] = v[l + 1];
+					v[k - 1] = '\0';
+					k--;
+					j = 0;
+				}
+			}
+			system("cls");
+		}
+		i++;
 	}
+	system("cls");
+	//delete storage;
 	return 0;
 }
 
@@ -554,24 +527,19 @@ int main()
 	Tree* tree = new Tree;
 	Stack* stringstack = new Stack;
 	char* expr = getString();
+	char* temp = new char[100];
+	//cout << strlen(temp);
+	strcpy(temp, expr);
 	tree->root = ExpressionTree(expr, stringstack);
 	int level = 0;
 	tree->printPostorder(tree->root); cout << endl << endl;
 	cout << "Tree itself: \n\n";
 	tree->print_tree(tree->root, level);
-	//system("pause");
-	//tree->printPostorder(tree->root); cout << endl << endl;
-	char* v = new char[10];
+	system("pause");
 	double ins = 0;
+	variableToFloat(temp, ins, tree);
+	tree->printPostorder(tree->root); cout << endl << endl;
 	cout << "Result = " << eval(tree->root) << endl;
-	/*system("pause");
-	do {
-		while (cin.get() != '\n');
-		if (variableToFloat(v, ins, tree)) {
-			cout << "Done!\n";
-		}
-	}while (!variableToFloat(v, ins, tree));
-	cout << "Result = " << eval(tree->root) << endl;*/
-	delete[] tree, stringstack, expr, v;
+	delete[] tree, stringstack, expr, temp;
 	return 0;
 }
