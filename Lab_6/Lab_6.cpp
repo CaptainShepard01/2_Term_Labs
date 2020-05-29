@@ -67,7 +67,7 @@ struct Graph
 		for (int i = 0; i < numOfVertexes; i++)
 			str_adj[i] = nullptr;
 
-		//this->fromMatrToStrAdj();
+		this->fromMatrToStrAdj();
 
 		if (file)
 			fclose(file);
@@ -171,7 +171,7 @@ struct Graph
 
 	bool pullVertexes(int v1, int v2)
 	{
-		if (v1 <= 0 || v1 > maxN || v2 <= 0 || v2 > maxN) {
+		if (v1 <= 0 || v1 > numOfVertexes || v2 <= 0 || v2 > numOfVertexes) {
 			cout << "Wrong vertexes!\nTry again.\n";
 			system("pause");
 			return 0;
@@ -184,17 +184,18 @@ struct Graph
 		if (v1 > v2) { int temp = v1; v1 = v2; v2 = temp; }
 		v1--; v2--;
 		for (int i = 0; i < maxN; ++i) {
-			if (matrix[v2][i] && !matrix[v1][i] && i!=v1) {
+			if (matrix[v2][i] && !matrix[v1][i] && i != v1) {
 				matrix[v1][i] = 1;
+				matrix[i][v1] = 1;
 			}
 		}
-		for (int i = v2; i < maxN-1; ++i) {
-			for (int j = v2; j < maxN-1; ++j) {
+		for (int i = v2; i < maxN - 1; ++i) {
+			for (int j = v2; j < maxN - 1; ++j) {
 				matrix[i][j] = matrix[i + 1][j + 1];
 			}
 		}
-		numOfVertexes--;
-		str_adj[maxN-1] = {};
+		(this->numOfVertexes)--;
+		for (int i = 0; i < numOfVertexes + 1; i++)	str_adj[i] = nullptr;
 		fromMatrToStrAdj();
 		printMatrix();
 		cout << endl;
@@ -270,19 +271,27 @@ int main()
 		case 1: {
 			newGraph->load(filename);
 			newGraph->printMatrix();
-			//cout << endl;
-			//newGraph->printStrAdj();
+			cout << endl;
+			newGraph->printStrAdj();
 			system("pause");
 			break;
 		}
 		case 2: {
+			if (!newGraph->isInitialised()) {
+				cout << "Initialise graph first!\n";
+				system("pause");
+				break;
+			}
 			int v1 = 0;
 			int v2 = 0;
+			newGraph->printMatrix();
+			cout << endl;
 			do {
 				cout << "Enter numbers of vertexes to pull:\nFirst vertex: ";
 				cin >> v1;
 				cout << "Second vertex: ";
 				cin >> v2;
+				cout << endl;
 				newGraph->pullVertexes(v1, v2);
 			} while (v1 <= 0 || v2 <= 0 || v1 > maxN || v2 > maxN);
 			system("pause");
