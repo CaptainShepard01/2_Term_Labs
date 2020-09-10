@@ -7,205 +7,12 @@
 #include <fstream>
 #include <conio.h>
 
-//#include "List.h"
+#include "Structures.h"
 #include "Header.h"
 using namespace std;
 
 char* substringLeft = new char[100];
 char* substringRight = new char[100];
-
-struct Node
-{
-	bool isVariable = 1;
-	char* value = new char[10];
-	double data = 0;
-	Node* right = nullptr; Node* left = nullptr;
-};
-
-struct Stack {
-	Node* head = nullptr;
-	Node* tail = nullptr;
-
-	Node* peek()
-	{
-		return tail;
-	};
-
-	void push(char* value)
-	{
-		Node* node = new Node;
-		for (int i = 0; i < strlen(value); ++i)
-		{
-			node->value[i] = value[i];
-		}
-		node->value[strlen(value)] = '\0';
-		if (tail == nullptr) {
-			tail = node; head = node;
-		}
-		else {
-			node->left = tail;
-			tail->right = node;
-			tail = node;
-		}
-	};
-
-	Node* pop()
-	{
-		if (tail != nullptr) {
-			Node* cur = tail;
-			if (tail != head) {
-				tail = (tail)->left;
-				(tail)->right = nullptr;
-			}
-			else {
-				tail = nullptr; head = nullptr;
-			}
-			return cur;
-		}
-	};
-};
-
-struct Tree
-{
-	Node* root = nullptr;
-
-	Node* first(char* value) {
-		root = new Node;
-		for (int i = 0; i < strlen(value); ++i)
-		{
-			root->value[i] = value[i];
-		}
-		root->value[strlen(value)] = '\0';
-		root->left = nullptr;
-		root->right = nullptr;
-		return root;
-	}
-
-	void print_tree(Node* p, int level)
-	{
-		if (p) {
-			print_tree(p->left, level + 1);
-			for (int i = 0; i < level; ++i)cout << "    ";
-			cout << p->value << endl;
-			print_tree(p->right, level + 1);
-		}
-	}
-	void printPostorder(Node* node)
-	{
-		if (node == NULL)
-			return;
-
-		// first recur on left subtree 
-		printPostorder(node->left);
-
-		// then recur on right subtree 
-		printPostorder(node->right);
-
-		// now deal with the node 
-		if (node->isVariable == 1)	cout << node->value << " ";
-		else cout << node->data << " ";
-	}
-	bool variable_redefiner(Node* p, char v, float ins)
-	{
-		if (p) {
-			variable_redefiner(p->left, v, ins);
-			if (isalpha(p->value[0]) && v == p->value[0] && p->isVariable==1 && strlen(p->value) == 1) {
-				p->data = ins;
-				p->isVariable = 0;
-			}
-			variable_redefiner(p->right, v, ins);
-			
-			return 1;
-		}
-		return 0;
-	}
-};
-
-struct List {
-	Node* head = NULL;
-	Node* tail = NULL;
-
-	void addLast(char* value) {
-		Node* node = new Node;
-		for (int i = 0; i < strlen(value); ++i)
-		{
-			node->value[i] = value[i];
-		}
-		node->value[strlen(value)] = '\0';
-		node->right = NULL;
-		if (head == NULL) {
-			tail = node; head = node;
-		}
-		else {
-			node->left = tail;
-			tail->right = node;
-			tail = node;
-		}
-	}
-
-	Node* find(char* key)
-	{
-		Node* cur = head;
-		while (cur)
-		{
-			if (strcmp(cur->value, key) == 0)break;
-			cur = cur->right;
-		}
-		if (cur != NULL) { system("cls"); cout << "Here you are: " << cur->value << '\n'; }
-		else cout << "There is no such element in list!" << endl;
-		system("pause");
-		system("cls");
-		return cur;
-	}
-
-	bool remove(char* key)
-	{
-		if (Node* pkey = find(key)) {
-			if (pkey == head) {
-				head = (head)->right;
-				(head)->left = NULL;
-			}
-			else if (pkey == tail) {
-				tail = (tail)->left;
-				(tail)->right = NULL;
-			}
-			else {
-				(pkey->left)->right = pkey->right;
-				(pkey->right)->left = pkey->left;
-			}
-			delete pkey;
-			return true;
-		}
-		return false;
-	}
-
-	bool RemoveLast()
-	{
-		if (head == NULL) {
-			cout << "There are no elements!" << endl << endl;
-			return false;
-		}
-		else {
-			Node* cur = tail;
-			tail = (tail)->left;
-			(tail)->right = NULL;
-			delete cur;
-			//cout << "Successful!" << endl;
-			return true;
-		}
-
-	}
-	void Print()
-	{
-		Node* cur = new Node;
-		cur = head;
-		while (cur) {
-			cout << "Element: " << cur->value << endl;
-			cur = cur->right;
-		}
-		return;
-	}
-};
 
 Node* ExpressionTree(char* c, Stack*& stack)
 {
@@ -368,6 +175,8 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			int k = i + 3;
 			Node* node = new Node;
 			node->value[0] = 'c'; node->value[1] = 'o'; node->value[2] = 's'; node->value[3] = '\0';
+			node->isVariable = 0;
+			node->isCos = 1;
 			for (k; k < strlen(c); ++k)
 			{
 				substringRight[k - (i + 3)] = c[k];
@@ -395,6 +204,8 @@ Node* ExpressionTree(char* c, Stack*& stack)
 			int k = i + 3;
 			Node* node = new Node;
 			node->value[0] = 's'; node->value[1] = 'i'; node->value[2] = 'n'; node->value[3] = '\0';
+			node->isVariable = 0;
+			node->isSin = 1;
 			for (k; k < strlen(c); ++k)
 			{
 				substringRight[k - (i + 3)] = c[k];
@@ -426,109 +237,14 @@ Node* ExpressionTree(char* c, Stack*& stack)
 	return node;
 }
 
-char* getString()
-{
-	char* string = new char[100];
-	cin.getline(string, 100);
-	return string;
-}
-
-bool isSin(char f, char s, char t)
-{
-	if (f == 's' && s == 'i' && t == 'n')return 1;
-	return 0;
-}
-
-bool isCos(char f, char s, char t)
-{
-	if (f == 'c' && s == 'o' && t == 's')return 1;
-	return 0;
-}
-
-bool variableToFloat(char* v, double& ins, Tree* &tree)
-{
-	system("cls");
-	int i = 0, k = 0;
-	char tmp = 'o';
-	while (v[i] != '\0') {	
-		cin.clear();
-		if (isalpha(v[i]) && !isSin(v[i], v[i + 1], v[i + 2]) && !isCos(v[i], v[i + 1], v[i + 2])){		
-			tree->printPostorder(tree->root); cout << endl << endl;
-			cout << "Variable: " << v[i] << endl;
-			cout << "Enter value: ";
-			cin.clear();
-			cin >> ins;
-			tree->variable_redefiner(tree->root, v[i], ins);
-			tmp = v[i];
-			k = strlen(v);
-			for (int j = 0; j < k; ++j) {
-				if (v[j] == tmp) {
-					for (int l = 0; l < k; ++l)v[l] = v[l + 1];
-					v[k - 1] = '\0';
-					k--;
-					j = 0;
-				}
-			}
-			system("cls");
-		}
-		i++;
-	}
-	system("cls");
-	//delete storage;
-	return 0;
-}
-
-double eval(Node* root)
-{
-	// empty tree  
-	if (!root)
-		return 0;
-
-	// leaf node i.e, a double  
-	/*if (isalpha(root->value[0]) && root->value[1] == '\0') {
-
-	}*/
-	if (!root->left && !root->right)
-		return (root->data);
-
-	// Evaluate left subtree  
-	double l_val = eval(root->left);
-
-	// Evaluate right subtree  
-	double r_val = eval(root->right);
-
-	// Check which operator to apply  
-	if (root->value[0] == '+')
-		return l_val + r_val;
-
-	if (root->value[0] == '-')
-		return l_val - r_val;
-
-	if (root->value[0] == '~')
-		return -(r_val);
-
-	if (root->value[0] == '*')
-		return l_val * r_val;
-
-	if (root->value[0] == '/')
-		return l_val / r_val;
-
-	if (root->value[0] == 's')
-		return sin(r_val);
-
-	if (root->value[0] == 'c')
-		return cos(r_val);
-}
-
 int main()
 {
-	//cout << cursubstringLeft << cursubstringRight << substringLeft << substringRight;
-	cout << "Expression: ";
 	Tree* tree = new Tree;
 	Stack* stringstack = new Stack;
+	cout << "Enter expression without spaces and using only floats, variables(1 character each), +, -, *, /, cos and sin!\n";
+	cout << "Expression: ";
 	char* expr = getString();
 	char* temp = new char[100];
-	//cout << strlen(temp);
 	strcpy(temp, expr);
 	tree->root = ExpressionTree(expr, stringstack);
 	int level = 0;
